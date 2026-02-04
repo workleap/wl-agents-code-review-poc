@@ -39,6 +39,7 @@ jobs:
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          # TODO: Extract to a file using "prompt-file".
           prompt: |
             This is PR #${{ github.event.pull_request.number }} for ${{ github.repository }}.
 
@@ -57,14 +58,14 @@ jobs:
 
             Run the following agent skills on files based on their imports (changed lines only):
 
-                - Files importing `@squide/*` → `/workleap-squide`
-                - Files importing `@workleap/logging` → `/workleap-logging`
-                - Files importing `@workleap/telemetry` → `/workleap-telemetry`
-                - Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` → `/workleap-web-configs`
+                - Files importing `@squide/*` -> `/workleap-squide`
+                - Files importing `@workleap/logging` -> `/workleap-logging`
+                - Files importing `@workleap/telemetry` -> `/workleap-telemetry`
+                - Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` -> `/workleap-web-configs`
 
             Run the following agent skills on files matching by name or file type:
 
-                - `turbo.json` → `/turborepo`
+                - `turbo.json` -> `/turborepo`
 
             Be concise and specific in your feedback.
 
@@ -73,11 +74,25 @@ jobs:
                 - If the issue matches an agent skill or a custom guideline, name it explicitly.
                 - Otherwise, choose an appropriate category based on the nature of the issue.
                 - Always include the exact code location (`file:line` or line range).
+                - Output must be valid JSON that conforms to `.github/codex/schemas/pr-review.schema.json`.
+                - Return only JSON, no markdown or extra commentary.
+                - The JSON must be shaped as:
+                  {
+                    "summary": "string",
+                    "comments": [
+                      { "path": "path/to/file", "line": 123, "side": "RIGHT", "body": "comment text", "category": "accessibility" }
+                    ]
+                  }
+                - `category` is required by the schema. Use a skill name when applicable, otherwise a non-skill category.
+                - Allowed categories: "" (only if truly uncategorized), accessibility, best-practices, core-web-vitals, performance, web-quality-audit, turborepo, workleap-logging, workleap-squide, workleap-telemetry, workleap-web-configs, bug, best-practice, security, reliability, maintainability, testing, docs, style, compatibility.
+                - `side` is required. Use `RIGHT` for PR changes unless you are explicitly referencing the base.
 
             Pull request title and body:
             ----
             ${{ github.event.pull_request.title }}
             ${{ github.event.pull_request.body }}
+          codex-args: >
+            ["--output-schema", ".github/codex/schemas/pr-review.schema.json"]
 
   post_feedback:
     runs-on: ubuntu-latest
@@ -97,9 +112,47 @@ jobs:
         with:
           github-token: ${{ github.token }}
           script: |
-            await github.rest.issues.createComment({
+            let payload;
+            try {
+              payload = JSON.parse(process.env.CODEX_FINAL_MESSAGE);
+            } catch (error) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `Codex output format error: ${error.message}`
+              });
+              return;
+            }
+
+            const comments = Array.isArray(payload.comments) ? payload.comments : [];
+
+            const agentTag = "Agent: codex";
+
+            if (comments.length === 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: [payload.summary || "No issues found.", agentTag].join("\n\n")
+              });
+              return;
+            }
+
+            await github.rest.pulls.createReview({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: process.env.CODEX_FINAL_MESSAGE,
+              pull_number: context.payload.pull_request.number,
+              event: "COMMENT",
+              body: [payload.summary, agentTag].filter(Boolean).join("\n\n"),
+              comments: comments.map(c => ({
+                path: c.path,
+                line: c.line,
+                side: c.side || "RIGHT",
+                body: [
+                  c.body,
+                  c.category ? `Category: ${c.category}` : "",
+                  agentTag
+                ].filter(Boolean).join("\n\n")
+              }))
             });

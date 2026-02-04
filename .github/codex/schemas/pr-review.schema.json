@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Codex PR Review Output",
+  "type": "object",
+  "required": ["summary", "comments"],
+  "additionalProperties": false,
+  "properties": {
+    "summary": {
+      "type": "string",
+      "description": "High-level PR review summary"
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/comment"
+      }
+    }
+  },
+  "definitions": {
+    "comment": {
+      "type": "object",
+      "required": [
+        "path",
+        "line",
+        "side",
+        "category",
+        "body"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 },
+        "side": { "type": "string", "enum": ["RIGHT", "LEFT"] },
+        "body": { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": [
+            "",
+            "accessibility",
+            "best-practices",
+            "core-web-vitals",
+            "performance",
+            "web-quality-audit",
+            "turborepo",
+            "workleap-logging",
+            "workleap-squide",
+            "workleap-telemetry",
+            "workleap-web-configs",
+            "bug",
+            "best-practice",
+            "security",
+            "reliability",
+            "maintainability",
+            "testing",
+            "docs",
+            "style",
+            "compatibility"
+          ],
+          "description": "Skill name when applicable, otherwise a non-skill category. Use an empty string only if truly uncategorized."
+        }
+      }
+    }
+  }
+}
