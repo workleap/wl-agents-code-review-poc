@@ -177,6 +177,51 @@ Note: Codex inline review failed on line resolution and posted a fallback summar
 | direct LogRocket identify | Yes | Yes | Yes |
 | logger.error on success | Yes | Yes | Yes |
 
+## Round 4 (PR #13) - Copilot vs Claude Code vs Codex
+
+NOTE: The `INJECTED_ISSUES.md` file was removed from the repository for this round... Without significant changes in terms of time to completion, cost and issues discovery.
+
+### Summary
+
+- Total intentional issues: 27
+- Copilot coverage: 25/27 (92.6%)
+- Claude Code coverage: 27/27 (100%)
+- Codex coverage: 24/27 (88.9%)
+
+Best overall coverage: Claude Code. Copilot was close behind. Codex missed a few UI/accessibility items (notably error text contrast).
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Missing lang attribute | Yes | Yes | Yes |
+| useProtectedDataQueries without waitForProtectedData | No | Yes | No |
+| useDeferredRegistrations not called | Yes | Yes | Yes |
+| ProtectedRoutes removed | Yes | Yes | Yes |
+| /login route uses registerRoute | Yes | Yes | No |
+| useRenderedNavigationItems signature broken | Yes | Yes | Yes |
+| $visibility public on /employees/add | Yes | Yes | Yes |
+| missing parentId for /employees/reports | Yes | Yes | Yes |
+| deferred registration callback never executed | Yes | Yes | Yes |
+| scroll listener no cleanup / layout thrash | Yes | Yes | Yes |
+| dangerouslySetInnerHTML XSS | Yes | Yes | Yes |
+| icon-only button lacks accessible name | Yes | Yes | Yes |
+| div acting as button | No | Yes | Yes |
+| aria-hidden on h1 | Yes | Yes | Yes |
+| duplicate IDs in table | Yes | Yes | Yes |
+| log chain without terminal method | Yes | Yes | Yes |
+| heading h1->h3 | Yes | Yes | Yes |
+| http image without alt/dimensions | Yes | Yes | Yes |
+| unlabeled internal notes input | Yes | Yes | Yes |
+| label associations broken | Yes | Yes | Yes |
+| validationScope not ended | Yes | Yes | Yes |
+| outline none | Yes | Yes | Yes |
+| nav contrast low | Yes | Yes | Yes |
+| error text invisible | Yes | Yes | No |
+| manual Telemetry Id/Device Id | Yes | Yes | Yes |
+| direct LogRocket identify | Yes | Yes | Yes |
+| logger.error on success | Yes | Yes | Yes |
+
 ## Findings
 
 ### Claude Code can only validate the changes of the PR even if instructions say otherwise
