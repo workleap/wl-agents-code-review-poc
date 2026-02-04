@@ -1,5 +1,7 @@
 # Code Review Instructions
 
+## Agent skills
+
 When performing code reviews, load and use the following agent skills that are available in the `./.agents/skills` folder.
 
 ### Always Apply
@@ -20,3 +22,9 @@ Run on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
 ### Apply Based on File Type
 
 - `turbo.json` → `/turborepo`
+
+## Issue Reporting
+
+When reporting issues:
+
+- If the issue matches an agent skill or a custom guideline, name it explicitly.
