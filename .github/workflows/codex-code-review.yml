@@ -127,7 +127,7 @@ jobs:
 
             const comments = Array.isArray(payload.comments) ? payload.comments : [];
 
-            const agentTag = "[agent:codex]";
+            const agentTag = "Agent: codex";
 
             if (comments.length === 0) {
               await github.rest.issues.createComment({
@@ -151,7 +151,7 @@ jobs:
                 side: c.side || "RIGHT",
                 body: [
                   c.body,
-                  c.category ? `[category:${c.category}]` : "",
+                  c.category ? `Category: ${c.category}` : "",
                   agentTag
                 ].filter(Boolean).join("\n\n")
               }))
