@@ -58,14 +58,14 @@ jobs:
 
             Run the following agent skills on files based on their imports (changed lines only):
 
-                - Files importing `@squide/*` → `/workleap-squide`
-                - Files importing `@workleap/logging` → `/workleap-logging`
-                - Files importing `@workleap/telemetry` → `/workleap-telemetry`
-                - Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` → `/workleap-web-configs`
+                - Files importing `@squide/*` -> `/workleap-squide`
+                - Files importing `@workleap/logging` -> `/workleap-logging`
+                - Files importing `@workleap/telemetry` -> `/workleap-telemetry`
+                - Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` -> `/workleap-web-configs`
 
             Run the following agent skills on files matching by name or file type:
 
-                - `turbo.json` → `/turborepo`
+                - `turbo.json` -> `/turborepo`
 
             Be concise and specific in your feedback.
 
@@ -80,10 +80,12 @@ jobs:
                   {
                     "summary": "string",
                     "comments": [
-                      { "path": "path/to/file", "line": 123, "side": "RIGHT", "body": "comment text", "skill": "optional-skill-name" }
+                      { "path": "path/to/file", "line": 123, "side": "RIGHT", "body": "comment text", "category": "accessibility" }
                     ]
                   }
-                - When a comment is based on an agent skill, include `skill` with the skill name. Otherwise omit `skill`.
+                - `category` is required by the schema. Use a skill name when applicable, otherwise a non-skill category.
+                - Allowed categories: "" (only if truly uncategorized), accessibility, best-practices, core-web-vitals, performance, web-quality-audit, turborepo, workleap-logging, workleap-squide, workleap-telemetry, workleap-web-configs, bug, best-practice, security, reliability, maintainability, testing, docs, style, compatibility.
+                - `side` is required. Use `RIGHT` for PR changes unless you are explicitly referencing the base.
 
             Pull request title and body:
             ----
@@ -145,6 +147,6 @@ jobs:
                 path: c.path,
                 line: c.line,
                 side: c.side || "RIGHT",
-                body: c.skill ? `${c.body}\n\n[skill:${c.skill}]` : c.body
+                body: c.category ? `${c.body}\n\n[category:${c.category}]` : c.body
               }))
             });
