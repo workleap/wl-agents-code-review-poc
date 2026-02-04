@@ -1,3 +1,9 @@
+## Summary
+
+- Copilot is the easiest one to configure, is able to load agent skill, and does a pretty good reviewing job overall. The reporting (comments) is the best of the 3. The downside is that the time to completion is very high in comparaison to the 2 others. I don't have any visibility on the average cost of a Copilot code review.
+- Claude Code is the most accurate of the 3. It consistently found out more issues than the 2 others. The reporting (comments) is inconsistent, sometimes using GitHub MCP Server to report the issues individually as PR review comments, and sometimes reporting all the issues in a single comment. The time to completion and cost used to be high but somehow shrink by about 300% as I was completing subsequent rounds. I made some changes, but nothing that should have significantly lowered both of these. An hypothesis is that Anthropic released a change during my test. TBD.
+- Codex is pretty good, with an accuracy similar to Copilot, but the time to completion is a lot lower. The main struggle with Codex is that to get a good reporting experience, the setup is complex. Once it's set up, the reporting is somewhat consistent. The main issue is that sometimes the line numbers don't match the PR which requires Codex to fallback to reporting all the issues in a single comment rather than using standalaone PR review comments.
+
 ## Round 1 (PR #2) - Copilot vs Claude Code
 
 ### Summary
