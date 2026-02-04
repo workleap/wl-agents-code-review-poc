@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router";
 import { useLogger } from "@squide/firefly";
 import { dataStore } from "../../../shared/dataStore.ts";
@@ -77,12 +77,25 @@ export function EmployeeListPage() {
             .map(m => m.name);
     }, []);
 
+    useEffect(() => {
+        const handler = () => {
+            const rows = document.querySelectorAll("tbody tr");
+            rows.forEach(row => {
+                const height = (row as HTMLElement).offsetHeight;
+                (row as HTMLElement).style.height = `${height + 1}px`;
+            });
+        };
+
+        window.addEventListener("scroll", handler);
+    }, []);
+
+    logger.withText("Employee list payload").withObject(filteredEmployees).debug();
     logger.information(`Displaying ${filteredEmployees.length} of ${employees.length} employees`);
 
     return (
         <div style={containerStyle}>
             <div style={pageHeaderStyle}>
-                <h1>Employee Directory</h1>
+                <h1 aria-hidden="true">Employee Directory</h1>
                 <p>Manage your organization's employees and assignments</p>
             </div>
 
@@ -138,6 +151,22 @@ export function EmployeeListPage() {
                 </button>
             </div>
 
+            <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "12px" }}>
+                <button type="button" onClick={() => window.print()} style={buttonStyle}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                        <rect x="2" y="2" width="12" height="12" fill="currentColor" />
+                    </svg>
+                </button>
+                <div onClick={handleClearFilters} style={{ ...buttonStyle, backgroundColor: "#999", padding: "8px 12px" }}>
+                    Reset
+                </div>
+            </div>
+
+            <div style={{ marginBottom: "12px", color: "#666" }}>
+                <strong>Raw search preview:</strong>{" "}
+                <span dangerouslySetInnerHTML={{ __html: filters.search }} />
+            </div>
+
             <p>Showing {filteredEmployees.length} of {employees.length} employees</p>
 
             <table style={tableStyle}>
@@ -155,10 +184,10 @@ export function EmployeeListPage() {
                 <tbody>
                     {filteredEmployees.map((employee: Employee) => (
                         <tr key={employee.id}>
-                            <td style={tdStyle}>
+                            <td id="employee-name" style={tdStyle}>
                                 {employee.firstName} {employee.lastName}
                             </td>
-                            <td style={tdStyle}>{employee.email}</td>
+                            <td id="employee-email" style={tdStyle}>{employee.email}</td>
                             <td style={tdStyle}>{employee.department}</td>
                             <td style={tdStyle}>{employee.position}</td>
                             <td style={tdStyle}>{new Date(employee.hireDate).toLocaleDateString()}</td>
