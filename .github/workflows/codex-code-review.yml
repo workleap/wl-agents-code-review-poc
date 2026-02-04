@@ -127,12 +127,14 @@ jobs:
 
             const comments = Array.isArray(payload.comments) ? payload.comments : [];
 
+            const agentTag = "[agent:codex]";
+
             if (comments.length === 0) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
-                body: payload.summary || "No issues found."
+                body: [payload.summary || "No issues found.", agentTag].join("\n\n")
               });
               return;
             }
@@ -142,11 +144,15 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
               event: "COMMENT",
-              body: payload.summary,
+              body: [payload.summary, agentTag].filter(Boolean).join("\n\n"),
               comments: comments.map(c => ({
                 path: c.path,
                 line: c.line,
                 side: c.side || "RIGHT",
-                body: c.category ? `${c.body}\n\n[category:${c.category}]` : c.body
+                body: [
+                  c.body,
+                  c.category ? `[category:${c.category}]` : "",
+                  agentTag
+                ].filter(Boolean).join("\n\n")
               }))
             });
