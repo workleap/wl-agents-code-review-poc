@@ -74,6 +74,16 @@ jobs:
                 - If the issue matches an agent skill or a custom guideline, name it explicitly.
                 - Otherwise, choose an appropriate category based on the nature of the issue.
                 - Always include the exact code location (`file:line` or line range).
+                - Output must be valid JSON that conforms to `.github/codex/schemas/pr-review.schema.json`.
+                - Return only JSON, no markdown or extra commentary.
+                - The JSON must be shaped as:
+                  {
+                    "summary": "string",
+                    "comments": [
+                      { "path": "path/to/file", "line": 123, "side": "RIGHT", "body": "comment text", "skill": "optional-skill-name" }
+                    ]
+                  }
+                - When a comment is based on an agent skill, include `skill` with the skill name. Otherwise omit `skill`.
 
             Pull request title and body:
             ----
@@ -100,9 +110,41 @@ jobs:
         with:
           github-token: ${{ github.token }}
           script: |
-            await github.rest.issues.createComment({
+            let payload;
+            try {
+              payload = JSON.parse(process.env.CODEX_FINAL_MESSAGE);
+            } catch (error) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `Codex output format error: ${error.message}`
+              });
+              return;
+            }
+
+            const comments = Array.isArray(payload.comments) ? payload.comments : [];
+
+            if (comments.length === 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: payload.summary || "No issues found."
+              });
+              return;
+            }
+
+            await github.rest.pulls.createReview({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: process.env.CODEX_FINAL_MESSAGE,
+              pull_number: context.payload.pull_request.number,
+              event: "COMMENT",
+              body: payload.summary,
+              comments: comments.map(c => ({
+                path: c.path,
+                line: c.line,
+                side: c.side || "RIGHT",
+                body: c.skill ? `${c.body}\n\n[skill:${c.skill}]` : c.body
+              }))
             });
