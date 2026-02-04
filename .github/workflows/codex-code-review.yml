@@ -62,7 +62,7 @@ jobs:
                 - Files importing `@workleap/telemetry` → `/workleap-telemetry`
                 - Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` → `/workleap-web-configs`
 
-            Run the following agent skills on files matching the name of file type:
+            Run the following agent skills on files matching by name or file type:
 
                 - `turbo.json` → `/turborepo`
 
