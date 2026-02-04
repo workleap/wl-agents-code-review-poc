@@ -25,7 +25,7 @@ This file tracks the intentional issues we injected for the Copilot/Claude revie
 - `src/modules/employee/pages/EmployeeListPage.tsx`: Add `div` acting as button for reset (not keyboard accessible).
 - `src/modules/employee/pages/EmployeeListPage.tsx`: Add `aria-hidden="true"` to `<h1>`.
 - `src/modules/employee/pages/EmployeeListPage.tsx`: Add duplicate IDs to table cells (`id="employee-name"` and `id="employee-email"` on every row).
-- `src/modules/employee/pages/EmployeeListPage.tsx`: Log full list via `logger.withObject(filteredEmployees)` (PII).
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Add a log chain with `withText`/`withObject` that never calls a final log method (no output).
 
 ## Add Employee Page
 
@@ -46,6 +46,8 @@ This file tracks the intentional issues we injected for the Copilot/Claude revie
 
 ## Telemetry/Logging (PII/Sensitive)
 
-- `src/modules/employee/pages/AddEmployeePage.tsx`: Import `useMixpanelTrackingFunction`, send full `formData` payload to `track`.
-- `src/modules/employee/pages/AddEmployeePage.tsx`: Import `logrocket` directly and call `LogRocket.identify` with email and PII traits.
-- `src/modules/employee/pages/AddEmployeePage.tsx`: Log PII via `logger.information(\`Created employee for ${formData.email}\`)`.
+## Telemetry/Logging (Non-PII)
+
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Import `useMixpanelTrackingFunction` and manually set `"Telemetry Id"` / `"Device Id"` in event properties (should be automatic).
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Import `logrocket` directly and call `LogRocket.identify` (violates umbrella package guidance).
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Use `logger.error` for a successful action (wrong log level).

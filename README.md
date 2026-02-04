@@ -1,8 +1,6 @@
-## Findings
+## Round 1 (PR #2) - Copilot vs Claude Code
 
-### Copilot vs Claude Code (Intentional Issues)
-
-#### Summary
+### Summary
 
 Copilot did the better job overall.
 
@@ -10,7 +8,7 @@ It caught more of the intentional issues (19 vs. 11 inline comments) and covered
 
 That said, Claude did catch high‑impact issues (XSS, missing lang, unclosed scope), but overall Copilot had better breadth and coverage on this run.
 
-#### Matrix
+### Matrix
 
 - Total intentional issues: 34
 - Copilot coverage: 21/34 (61.8%)
@@ -55,6 +53,86 @@ That said, Claude did catch high‑impact issues (XSS, missing lang, unclosed sc
 | Telemetry | Mixpanel event includes full PII | No | No |
 | Telemetry | LogRocket identify uses email + PII traits | No | No |
 | Telemetry | Direct `logrocket` import (umbrella rule) | No | No |
+
+## Round 2 (PR #4) - Copilot vs Claude Code vs Codex
+
+### Summary
+
+- Total intentional issues: 27
+- Copilot coverage: 24/27 (88.9%)
+- Claude Code coverage: 27/27 (100%)
+- Codex coverage: 23/27 (85.2%)
+- Missed by all: 0
+
+### Matrix
+
+| Category | Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- | --- |
+| Accessibility | `<html>` missing `lang` | Yes | Yes | Yes |
+| Squide | `useProtectedDataQueries` without `waitForProtectedData` | No | Yes | No |
+| Squide | `useDeferredRegistrations` imported but not used | Yes | Yes | Yes |
+| Squide | `ProtectedRoutes` removed from host | Yes | Yes | Yes |
+| Squide | `/login` registered as protected (not public) | No | Yes | No |
+| Squide | `useRenderedNavigationItems` signature broken | Yes | Yes | Yes |
+| Squide | `$visibility: "public"` used instead of `registerPublicRoute` | Yes | Yes | No |
+| Squide | Invalid `parentId` reference | Yes | Yes | Yes |
+| Squide | Deferred registration callback never executed | Yes | Yes | Yes |
+| Performance | Scroll handler leak + layout thrash | Yes | Yes | Yes |
+| Security | XSS via `dangerouslySetInnerHTML` | Yes | Yes | Yes |
+| Accessibility | Icon-only button missing accessible name | Yes | Yes | Yes |
+| Accessibility | `div` used as button (not keyboard accessible) | Yes | Yes | Yes |
+| Accessibility | `aria-hidden="true"` on main `<h1>` | Yes | Yes | Yes |
+| Accessibility | Duplicate IDs in table rows | Yes | Yes | Yes |
+| Accessibility | Heading level jump (`h3` instead of `h1`) | No | Yes | No |
+| Best Practices | HTTP image + missing alt + missing dimensions | Yes | Yes | Yes |
+| Accessibility | Unlabeled "Internal notes" input | Yes | Yes | Yes |
+| Accessibility | Label/input mismatches + duplicate ID (`email`) | Yes | Yes | Yes |
+| Logging | `validationScope` started but never ended | Yes | Yes | Yes |
+| Accessibility | Focus outline removed (`outline: "none"`) | Yes | Yes | Yes |
+| Accessibility | Low contrast nav text (`#444` on `#333`) | Yes | Yes | Yes |
+| Accessibility | Error text color equals background | Yes | Yes | Yes |
+| Telemetry | Manual "Telemetry Id" / "Device Id" overrides | Yes | Yes | Yes |
+| Telemetry | Direct `logrocket` import/usage | Yes | Yes | Yes |
+| Logging | Wrong log level for success (`logger.error`) | Yes | Yes | Yes |
+| Logging | Log chain not terminated with `.debug()`/`.information()` | Yes | Yes | Yes |
+
+### Round 2 Comment References
+
+Copilot inline comment IDs (path:line -> comment id):
+- `public/index.html:2` -> `2765653712`
+- `src/App.tsx:10` -> `2765653664`
+- `src/host/register.tsx:9` -> `2765653807`
+- `src/host/register.tsx:10` -> `2765653742`
+- `src/host/RootLayout.tsx:16` -> `2765653831`
+- `src/modules/employee/register.tsx:17` -> `2765654062`
+- `src/modules/employee/register.tsx:32` -> `2765653899`
+- `src/modules/employee/pages/EmployeeListPage.tsx:89` -> `2765653944`
+- `src/modules/employee/pages/EmployeeListPage.tsx:89` -> `2765653959`
+- `src/modules/employee/pages/EmployeeListPage.tsx:98` -> `2765653911`
+- `src/modules/employee/pages/EmployeeListPage.tsx:159` -> `2765653923`
+- `src/modules/employee/pages/EmployeeListPage.tsx:162` -> `2765653930`
+- `src/modules/employee/pages/EmployeeListPage.tsx:167` -> `2765653974`
+- `src/modules/employee/pages/EmployeeListPage.tsx:191` -> `2765653844`
+- `src/modules/employee/pages/AddEmployeePage.tsx:5` -> `2765653856`
+- `src/modules/employee/pages/AddEmployeePage.tsx:80` -> `2765653764`
+- `src/modules/employee/pages/AddEmployeePage.tsx:97` -> `2765653986`
+- `src/modules/employee/pages/AddEmployeePage.tsx:102` -> `2765653777`
+- `src/modules/employee/pages/AddEmployeePage.tsx:105` -> `2765653997`
+- `src/modules/employee/pages/AddEmployeePage.tsx:122` -> `2765654009`
+- `src/modules/employee/pages/AddEmployeePage.tsx:142` -> `2765654027`
+- `src/modules/employee/pages/AddEmployeePage.tsx:146` -> `2765654040`
+- `src/modules/employee/pages/AddEmployeePage.tsx:159` -> `2765653790`
+- `src/shared/styles.ts:56` -> `2765654049`
+- `src/shared/styles.ts:157` -> `2765653869`
+- `src/shared/styles.ts:182` -> `2765653879`
+
+Claude Code summary comment (issue comment id):
+- `3849294560` (Claude completion + full review summary)
+
+Codex summary comment (issue comment id):
+- `3849302316` (Issues list summary)
+
+## Findings
 
 ### Claude Code can only validate the changes of the PR even if instructions say otherwise
 
