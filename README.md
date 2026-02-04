@@ -1,4 +1,4 @@
-## Findinds
+## Findings
 
 ### Can only validate the changes of the PR even if instructions say otherwise
 
