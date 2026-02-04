@@ -139,20 +139,36 @@ jobs:
               return;
             }
 
-            await github.rest.pulls.createReview({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              event: "COMMENT",
-              body: [payload.summary, agentTag].filter(Boolean).join("\n\n"),
-              comments: comments.map(c => ({
-                path: c.path,
-                line: c.line,
-                side: c.side || "RIGHT",
-                body: [
-                  c.body,
-                  c.category ? `Category: ${c.category}` : "",
-                  agentTag
-                ].filter(Boolean).join("\n\n")
-              }))
-            });
+            try {
+              await github.rest.pulls.createReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                event: "COMMENT",
+                body: [payload.summary, agentTag].filter(Boolean).join("\n\n"),
+                comments: comments.map(c => ({
+                  path: c.path,
+                  line: c.line,
+                  side: c.side || "RIGHT",
+                  body: [
+                    c.body,
+                    c.category ? `Category: ${c.category}` : "",
+                    agentTag
+                  ].filter(Boolean).join("\n\n")
+                }))
+              });
+            } catch (error) {
+              const fallbackBody = [
+                payload.summary || "Codex review findings",
+                "Inline review failed; posting summary list instead.",
+                agentTag,
+                ...comments.map(c => `${c.path}:${c.line} - ${c.body}`)
+              ].filter(Boolean).join("\n\n");
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: fallbackBody
+              });
+            }
