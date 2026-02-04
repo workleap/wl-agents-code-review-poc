@@ -6,17 +6,12 @@ import { NotFoundPage } from "./NotFoundPage.tsx";
 export const registerHost: ModuleRegisterFunction<FireflyRuntime> = runtime => {
     runtime.registerRoute({
         element: <RootLayout />,
-        children: [PublicRoutes]
+        children: [PublicRoutes, ProtectedRoutes]
     }, { hoist: true });
 
     runtime.registerRoute({
         index: true,
         element: <HomePage />
-    });
-
-    runtime.registerRoute({
-        path: "/login",
-        element: <NotFoundPage />
     });
 
     runtime.registerPublicRoute({
