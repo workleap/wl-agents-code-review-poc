@@ -1,9 +1,23 @@
-import { AppRouter, useIsBootstrapping } from "@squide/firefly";
+import { AppRouter, useIsBootstrapping, useDeferredRegistrations, useProtectedDataQueries } from "@squide/firefly";
 import { createBrowserRouter, Outlet } from "react-router";
 import { RouterProvider } from "react-router/dom";
+import { useMemo } from "react";
 
 function BootstrappingRoute() {
     const isBootstrapping = useIsBootstrapping();
+    const userData = { isAdmin: false };
+    const deferredData = useMemo(() => ({ userData }), [userData]);
+
+    useProtectedDataQueries([{
+        queryKey: ["/api/session"],
+        queryFn: async () => {
+            const response = await fetch("/api/session");
+            if (!response.ok) {
+                throw new Error("Unauthorized");
+            }
+            return response.json();
+        }
+    }]);
 
     if (isBootstrapping) {
         return (
