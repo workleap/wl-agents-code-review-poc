@@ -45,8 +45,34 @@ jobs:
             Review ONLY the changes introduced by the PR, so consider:
                git log --oneline ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}
 
-            Suggest any improvements, potential bugs, or issues.
+            Load and use the following agent skills that are available in the `./.agents/skills` folder to suggest improvements, potential bugs, or issues,
+            but do not limit yourself to the skills.
+
+            Run the following agent skills on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
+                - `/accessibility`
+                - `/best-practices`
+                - `/core-web-vitals`
+                - `/performance`
+                - `/web-quality-audit`
+
+            Run the following agent skills on files based on their imports (changed lines only):
+
+                - Files importing `@squide/*` → `/workleap-squide`
+                - Files importing `@workleap/logging` → `/workleap-logging`
+                - Files importing `@workleap/telemetry` → `/workleap-telemetry`
+                - Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` → `/workleap-web-configs`
+
+            Run the following agent skills on files matching by name or file type:
+
+                - `turbo.json` → `/turborepo`
+
             Be concise and specific in your feedback.
+
+            When reporting issues:
+
+                - If the issue matches an agent skill or a custom guideline, name it explicitly.
+                - Otherwise, choose an appropriate category based on the nature of the issue.
+                - Always include the exact code location (`file:line` or line range).
 
             Pull request title and body:
             ----
