@@ -179,6 +179,8 @@ Note: Codex inline review failed on line resolution and posted a fallback summar
 
 ## Round 4 (PR #13) - Copilot vs Claude Code vs Codex
 
+NOTE: The `INJECTED_ISSUES.md` file was removed from the repository for this round... Without significant changes in terms of time to completion, cost and issues discovery.
+
 ### Summary
 
 - Total intentional issues: 27
