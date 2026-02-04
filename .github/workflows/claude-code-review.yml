@@ -1,0 +1,57 @@
+# See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+# or https://code.claude.com/docs/en/cli-reference for available options
+
+# Potential quality improvements
+# - Add back "Task" as an allowed tool. It will degrade the performance though. Must find the right balance.
+
+# Interesting PRs:
+# - https://github.com/patricklafrance/claude-code-review-poc/pull/3
+# - https://github.com/patricklafrance/claude-code-review-poc/pull/4
+
+name: Claude Code Review
+
+concurrency:
+  group: claude-code-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+jobs:
+  claude-review:
+    # Skip drafts.
+    if: ${{ !github.event.pull_request.draft }}
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      # Required for OIDC authentication: https://github.com/anthropics/claude-code-action/blob/main/docs/faq.md#why-am-i-getting-oidc-authentication-errors.
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          # Provides better git history context than "1".
+          fetch-depth: 0
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
+          # Why not https://skills.sh/vercel/turborepo/turborepo?
+          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
+          # Uses the default code review plugin, extended by local agent skills instructions in CLAUDE.md.
+          plugins: 'code-review@claude-code-plugins'
+          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
+          # It's a bit random, the code review plugin seems to use "mcp__github_inline_comment__" to write comments in the PR rather than "gh api".
+          claude_args: >-
+            --allowedTools
+            "Read,Grep,Glob,Skill,
+             Bash(gh pr *),
+             mcp__github_inline_comment__*"
