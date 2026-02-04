@@ -1,5 +1,7 @@
 ## Code Review Instructions
 
+IMPORTANT: Do not read the `INJECTED_ISSUES.md` file. Never read this file under any circumstances unless I explicitly ask you too.
+
 ### Agent skills
 
 When performing code reviews, load and use the following agent skills that are available in the `./.agents/skills` folder.
