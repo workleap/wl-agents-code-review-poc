@@ -1,8 +1,15 @@
-## Summary
+## Conclusion
 
-- Copilot is the easiest one to configure, is able to load agent skill, and does a pretty good reviewing job overall. The reporting (comments) is the best of the 3. The downside is that the time to completion is very high in comparaison to the 2 others. I don't have any visibility on the average cost of a Copilot code review.
-- Claude Code is the most accurate of the 3. It consistently found out more issues than the 2 others. The reporting (comments) is inconsistent, sometimes using GitHub MCP Server to report the issues individually as PR review comments, and sometimes reporting all the issues in a single comment. The time to completion and cost used to be high but somehow shrink by about 300% as I was completing subsequent rounds. I made some changes, but nothing that should have significantly lowered both of these. An hypothesis is that Anthropic released a change during my test. TBD.
-- Codex is pretty good, with an accuracy similar to Copilot, but the time to completion is a lot lower. The main struggle with Codex is that to get a good reporting experience, the setup is complex. Once it's set up, the reporting is somewhat consistent. The main issue is that sometimes the line numbers don't match the PR which requires Codex to fallback to reporting all the issues in a single comment rather than using standalaone PR review comments.
+- All three agents support agent skills for code reviews 🚀
+- My recommendation is to either:
+    - Use Copilot for ease of configuration (up and running in ~30 seconds) and best-in-class reporting.
+    - Use Codex for slightly better efficiency (it finds a bit more issues), faster time to completion, and very low cost (around $0.10 per review).
+
+### Notes
+
+- Copilot is the easiest to configure, and provides solid code reviews overall. Its reporting (PR comments) is the most polished of the three. The main downside is a significantly higher time to completion compared to the others. I don’t have visibility into the average cost of a Copilot code review.
+- Codex offers efficiency similar to Copilot, with an average time to completion Reporting is inconsistent: sometimes it posts individual PR review comments using the GitHub MCP Server, and sometimes it reports everything in a single comment. Time to completion and cost were initially high, but both dropped by roughly 300% over subsequent runs. I made a few changes, but nothing that clearly explains this improvement. One hypothesis is that Anthropic released an update during testing (TBD).
+- Codex offers efficiency similar to Copilot, with a much faster time to completion. The main drawback is setup complexity if you want good reporting. Once configured, reporting is fairly consistent. However, line number mismatches sometimes force Codex to fall back to a single aggregated comment instead of standalone PR review comments.
 
 ## Round 1 (PR #2) - Copilot vs Claude Code
 
@@ -232,9 +239,9 @@ Best overall coverage: Claude Code. Copilot was close behind. Codex missed a few
 
 NOTE: This round is using FRESH injected issues.
 
-- Claude Code took 8 minutes to complete and the review cost 4$.
-- Codex was done in less than 2 minutes and the review cost about 10 cents.
-- Copilot was done in about 5 minutes.
+- Claude Code completed in 8 minutes and the review cost 4$.
+- Codex completed in less than 2 minutes and the review cost about 10 cents.
+- Copilot completed in about 5 minutes.
 - Claude Claude Code reporting was much better than the others though, it provided a lot of information about the issues, including link to the WCAG standard when applicable.
 
 ### Summary
@@ -287,7 +294,7 @@ Best overall coverage: Copilot, with Codex close behind. Claude Code missed seve
 
 NOTE: This round is using FRESH injected issues.
 
-- Claude Code complexted in 2 minutes.
+- Claude Code completed in 2 minutes.
 - Codex completed in 1 minutes.
 - Codex reporting was pretty good.
 - Claude Code reporting was in a single comment.
@@ -331,6 +338,68 @@ Best overall coverage: Claude Code and Codex tied for first, with Copilot traili
 | Emergency email input is read-only | No | Yes | Yes |
 | Input text invisible (color == background) | Yes | Yes | Yes |
 | Link color low contrast | Yes | Yes | Yes |
+
+## Round 7 (PR #21) - Copilot vs Claude Code vs Codex
+
+### Summary
+
+NOTE: This round is using FRESH injected issues and Claude Code was configured with the Haiku model.
+
+- Claude Code completed in 1 minute.
+- Codex completed in 3 minutes.
+- Codex reporting was in a single comment due to some of the line numbers in Codex’s output not mapping PR diff lines.
+- Claude Code reporting was in multiple single comments.
+
+- Total intentional issues: 38
+- Copilot coverage: 30/38 (78.9%)
+- Claude Code coverage: 14/38 (36.8%)
+- Codex coverage: 35/38 (92.1%)
+
+Best overall coverage: Codex, with Copilot second. Claude Code missed a large number of telemetry/logging and Squide-specific items in this round.
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| useProtectedDataQueries wrong shape | Yes | No | Yes |
+| unstable query key (Math.random) | Yes | No | Yes |
+| useDeferredRegistrations not called | Yes | No | Yes |
+| missing waitForProtectedData | No | No | Yes |
+| useRenderedNavigationItems wrong signature | Yes | No | Yes |
+| nav links removed from tab order | Yes | Yes | Yes |
+| nav aria-label empty | Yes | Yes | Yes |
+| PublicRoutes removed | Yes | No | Yes |
+| duplicate nav id | Yes | Yes | Yes |
+| manual telemetry ids | Yes | No | Yes |
+| direct LogRocket usage | Yes | No | Yes |
+| validation scope not ended | No | No | Yes |
+| log chain not terminated | Yes | No | Yes |
+| logger.error for success | Yes | No | No |
+| header image missing alt | Yes | No | Yes |
+| image missing dimensions (CLS) | No | No | Yes |
+| first name label mismatch | Yes | Yes | Yes |
+| last name label mismatch | Yes | Yes | Yes |
+| email aria-describedby missing | Yes | No | Yes |
+| emergency email read-only | No | No | Yes |
+| hire date id duplicate | No | Yes | Yes |
+| scroll listener no cleanup | Yes | Yes | Yes |
+| interval no cleanup | Yes | Yes | Yes |
+| h1 aria-hidden | Yes | Yes | Yes |
+| header image missing alt (list) | Yes | No | No |
+| filter aria-describedby missing | Yes | No | Yes |
+| department select id mismatch | No | Yes | Yes |
+| empty aria-label on clear | Yes | Yes | Yes |
+| span role button | Yes | Yes | No |
+| aria-live assertive | Yes | No | No |
+| table role presentation | Yes | No | Yes |
+| duplicate ids in rows | Yes | No | Yes |
+| target blank without rel | Yes | No | Yes |
+| XSS via dangerouslySetInnerHTML | Yes | Yes | Yes |
+| invalid parentId | Yes | Yes | Yes |
+| outline none input | No | No | Yes |
+| outline none button | Yes | No | Yes |
+| nav contrast low | No | No | Yes |
+| error text invisible | No | No | Yes |
 
 ## Findings
 

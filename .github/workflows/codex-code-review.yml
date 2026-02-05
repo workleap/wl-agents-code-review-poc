@@ -128,28 +128,109 @@ jobs:
             const comments = Array.isArray(payload.comments) ? payload.comments : [];
 
             const agentTag = "Agent: codex";
+            const prNumber = context.payload.pull_request.number;
 
             if (comments.length === 0) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
+                issue_number: prNumber,
                 body: [payload.summary || "No issues found.", agentTag].join("\n\n")
               });
               return;
             }
 
+            const listAllFiles = async () => {
+              const files = [];
+              let page = 1;
+              while (true) {
+                const response = await github.rest.pulls.listFiles({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  per_page: 100,
+                  page
+                });
+                files.push(...response.data);
+                if (response.data.length < 100) {
+                  break;
+                }
+                page += 1;
+              }
+              return files;
+            };
+
+            const buildPositionMap = (files) => {
+              const map = new Map();
+
+              for (const file of files) {
+                if (!file.patch) {
+                  continue;
+                }
+
+                const positions = new Map();
+                const lines = file.patch.split("\n");
+                let newLine = null;
+                let position = 0;
+
+                for (const line of lines) {
+                  position += 1;
+
+                  if (line.startsWith("@@")) {
+                    const match = line.match(/\+(\d+)(?:,(\d+))?/);
+                    if (match) {
+                      newLine = Number(match[1]);
+                    } else {
+                      newLine = null;
+                    }
+                    continue;
+                  }
+
+                  if (newLine === null) {
+                    continue;
+                  }
+
+                  if (line.startsWith("+") && !line.startsWith("+++")) {
+                    positions.set(newLine, position);
+                    newLine += 1;
+                    continue;
+                  }
+
+                  if (line.startsWith("-") && !line.startsWith("---")) {
+                    continue;
+                  }
+
+                  newLine += 1;
+                }
+
+                if (positions.size > 0) {
+                  map.set(file.filename, positions);
+                }
+              }
+
+              return map;
+            };
+
+            const files = await listAllFiles();
+            const positionMap = buildPositionMap(files);
+
+            const mappedComments = comments.map(c => {
+              const line = Number(c.line);
+              const filePositions = positionMap.get(c.path);
+              const position = filePositions ? filePositions.get(line) : undefined;
+              return { ...c, position };
+            });
+
             try {
               await github.rest.pulls.createReview({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
+                pull_number: prNumber,
                 event: "COMMENT",
                 body: [payload.summary, agentTag].filter(Boolean).join("\n\n"),
-                comments: comments.map(c => ({
+                comments: mappedComments.map(c => ({
                   path: c.path,
-                  line: c.line,
-                  side: c.side || "RIGHT",
+                  position: c.position,
                   body: [
                     c.body,
                     c.category ? `Category: ${c.category}` : "",
@@ -168,7 +249,7 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
+                issue_number: prNumber,
                 body: fallbackBody
               });
             }
