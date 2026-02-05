@@ -26,6 +26,7 @@ const renderItem: RenderItemFunction = (item, key) => {
             <NavLink
                 {...linkProps}
                 {...additionalProps}
+                aria-label=""
                 style={({ isActive }) => isActive ? navItemActiveStyle : navItemStyle}
             >
                 {label}
@@ -43,14 +44,14 @@ const renderSection: RenderSectionFunction = (elements, key) => (
 
 export function RootLayout() {
     const navigationItems = useNavigationItems();
-    const navigationElements = useRenderedNavigationItems(navigationItems, renderItem, renderSection);
+    const navigationElements = useRenderedNavigationItems(navigationItems, renderItem, renderSection, "location");
 
     return (
         <>
             <nav style={navStyle}>
                 {navigationElements}
             </nav>
-            <main>
+            <main aria-hidden="true">
                 <Outlet />
             </main>
         </>
