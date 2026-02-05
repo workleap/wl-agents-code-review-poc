@@ -401,6 +401,79 @@ Best overall coverage: Codex, with Copilot second. Claude Code missed a large nu
 | nav contrast low | No | No | Yes |
 | error text invisible | No | No | Yes |
 
+## Round 8 (PR #25) - Copilot vs Claude Code vs Codex
+
+NOTE: This round is using FRESH injected issues and Claude Code was inspired by [SG crawler](https://github.com/workleap/sg-crawler/blob/b5acbac96e13eb1912900886be683b7c87d02d4f/.github/workflows/claude-code-review.yml#L44) workflow.
+
+- Claude Code completed in 4 minute.
+- Codex completed in 3 minutes.
+- Codex reporting was in a single comment due to some of the line numbers in Codex’s output not mapping PR diff lines.
+- Claude Code reporting was in a singlement comment (as configured in the workflow).
+- I suspect Claude Code had issues loading the agent skills (I removed the `.claude/skills` folder).
+
+### Summary
+
+- Total intentional issues: 49
+- Copilot coverage: 41/49 (83.7%)
+- Claude Code coverage: 16/49 (32.7%)
+- Codex coverage: 32/49 (65.3%)
+
+Best overall coverage: Copilot, with Codex second. Claude Code missed many Squide/telemetry/logging issues in this round.
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Invalid lang tag (en_US) | No | Yes | No |
+| useProtectedDataQueries wrong shape | Yes | No | Yes |
+| Unstable query key (Math.random) | Yes | Yes | Yes |
+| useDeferredRegistrations misuse | Yes | No | Yes |
+| Missing waitForProtectedData | No | No | No |
+| useRenderedNavigationItems wrong signature | Yes | No | Yes |
+| Nav links removed from tab order | Yes | Yes | Yes |
+| Nav aria-label empty | Yes | Yes | Yes |
+| PublicRoutes removed | Yes | Yes | Yes |
+| 404 registered as protected | Yes | No | No |
+| /login registered as protected | Yes | No | No |
+| Duplicate nav id | Yes | Yes | Yes |
+| Edit route made public | Yes | No | No |
+| Invalid parentId | Yes | No | Yes |
+| $visibility public on route | No | No | No |
+| Scroll listener no cleanup | Yes | No | Yes |
+| Interval no cleanup | Yes | Yes | Yes |
+| H1 aria-hidden | Yes | Yes | Yes |
+| Header image missing alt | Yes | Yes | Yes |
+| Header image missing dimensions | Yes | No | No |
+| Filter aria-describedby missing | Yes | No | Yes |
+| Department select id mismatch | No | No | Yes |
+| Empty aria-label on clear | Yes | No | No |
+| Clear button removed from tab order | Yes | No | No |
+| Span role button | Yes | No | Yes |
+| aria-live assertive | Yes | No | No |
+| Table role presentation | Yes | Yes | Yes |
+| Duplicate ids in rows | Yes | No | No |
+| target=_blank without rel | Yes | No | Yes |
+| XSS via dangerouslySetInnerHTML | Yes | Yes | Yes |
+| Icon-only print button lacks name | Yes | No | Yes |
+| Manual telemetry ids | Yes | No | Yes |
+| Direct LogRocket usage | Yes | No | No |
+| Validation scope not ended | Yes | No | Yes |
+| Log chain not terminated | Yes | Yes | Yes |
+| logger.error for success | Yes | No | No |
+| Heading level h3 | Yes | Yes | No |
+| HTTP image without alt | Yes | No | No |
+| First name label mismatch | Yes | Yes | Yes |
+| Last name label mismatch | Yes | Yes | Yes |
+| Email aria-describedby missing | Yes | No | Yes |
+| Internal notes missing label | No | No | Yes |
+| Hire date id duplicate | No | Yes | Yes |
+| Emergency email read-only | Yes | No | No |
+| Input text invisible | Yes | No | Yes |
+| Button outline none | Yes | No | No |
+| Link color low contrast | Yes | No | Yes |
+| Nav contrast low | No | No | Yes |
+| Error text invisible | No | No | Yes |
+
 ## Findings
 
 ### Claude Code can only validate the changes of the PR even if instructions say otherwise
