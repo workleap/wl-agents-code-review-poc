@@ -1,15 +1,27 @@
 import { AppRouter, useIsBootstrapping } from "@squide/firefly";
-import { createBrowserRouter, Outlet } from "react-router";
+import { createBrowserRouter, Outlet, useNavigate, useHref } from "react-router";
 import { RouterProvider } from "react-router/dom";
+import { HopperProvider, Div, Spinner, Text } from "@hopper-ui/components";
+
+function HopperWrapper({ children }: { children: React.ReactNode }) {
+    const navigate = useNavigate();
+
+    return (
+        <HopperProvider colorScheme="light" navigate={navigate} useHref={useHref}>
+            {children}
+        </HopperProvider>
+    );
+}
 
 function BootstrappingRoute() {
     const isBootstrapping = useIsBootstrapping();
 
     if (isBootstrapping) {
         return (
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-                <p>Loading employee workspace...</p>
-            </div>
+            <Div display="flex" justifyContent="center" alignItems="center" height="100vh" UNSAFE_gap="space-160">
+                <Spinner aria-label="Loading" />
+                <Text>Loading employee workspace...</Text>
+            </Div>
         );
     }
 
@@ -22,7 +34,7 @@ export function App() {
             {({ rootRoute, registeredRoutes, routerProviderProps }) => (
                 <RouterProvider
                     router={createBrowserRouter([{
-                        element: rootRoute,
+                        element: <HopperWrapper>{rootRoute}</HopperWrapper>,
                         children: [{
                             element: <BootstrappingRoute />,
                             children: registeredRoutes

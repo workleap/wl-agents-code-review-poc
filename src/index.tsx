@@ -5,6 +5,7 @@ import { BrowserConsoleLogger, LogLevel } from "@workleap/logging";
 import { App } from "./App.tsx";
 import { registerHost } from "./host/register.tsx";
 import { registerEmployeeModule } from "./modules/employee/register.tsx";
+import "./index.css";
 
 const logger = new BrowserConsoleLogger({
     logLevel: LogLevel.debug

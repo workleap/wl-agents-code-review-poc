@@ -3,21 +3,23 @@ import { RootLogger } from "@workleap/logging";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
-import {
-    buttonGroupStyle,
-    buttonSecondaryStyle,
-    buttonStyle,
-    containerStyle,
-    errorMessageStyle,
-    formGroupStyle,
-    formStyle,
-    inputStyle,
-    labelStyle,
-    pageHeaderStyle,
-    selectStyle,
-    successMessageStyle
-} from "../../../shared/styles.ts";
 import type { EmployeeFormData } from "../../../shared/types.ts";
+import {
+    Div,
+    Stack,
+    Inline,
+    H1,
+    Text,
+    TextField,
+    Select,
+    SelectItem,
+    Button,
+    Form,
+    Callout,
+    Content,
+    Spinner
+} from "@hopper-ui/components";
+import type { Key } from "react-aria-components";
 
 const departments = ["Engineering", "Support", "HR", "Analytics", "Marketing", "Sales"];
 
@@ -57,9 +59,12 @@ export function EditEmployeePage() {
         });
     }, [id, logger]);
 
-    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+    const handleTextChange = useCallback((name: string) => (value: string) => {
         setFormData(prev => prev ? { ...prev, [name]: value } : null);
+    }, []);
+
+    const handleDepartmentChange = useCallback((key: Key | null) => {
+        setFormData(prev => prev ? { ...prev, department: key?.toString() ?? "" } : null);
     }, []);
 
     const validateForm = useCallback((): string | null => {
@@ -133,129 +138,105 @@ export function EditEmployeePage() {
 
     if (notFound) {
         return (
-            <div style={containerStyle}>
-                <div style={pageHeaderStyle}>
-                    <h1>Employee Not Found</h1>
-                </div>
-                <p>The requested employee could not be found.</p>
-                <button type="button" onClick={() => navigate("/employees")} style={buttonStyle}>
+            <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+                <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
+                    <H1>Employee Not Found</H1>
+                </Stack>
+                <Text marginBottom="stack-lg">The requested employee could not be found.</Text>
+                <Button variant="primary" onPress={() => navigate("/employees")}>
                     Back to Employee List
-                </button>
-            </div>
+                </Button>
+            </Div>
         );
     }
 
     if (!formData) {
         return (
-            <div style={containerStyle}>
-                <p>Loading...</p>
-            </div>
+            <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" display="flex" justifyContent="center" alignItems="center">
+                <Spinner aria-label="Loading employee data" />
+                <Text marginLeft="inline-md">Loading...</Text>
+            </Div>
         );
     }
 
     return (
-        <div style={containerStyle}>
-            <div style={pageHeaderStyle}>
-                <h1>Edit Employee</h1>
-                <p>Update the employee's information</p>
-            </div>
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+            <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
+                <H1>Edit Employee</H1>
+                <Text>Update the employee's information</Text>
+            </Stack>
 
             {message && (
-                <div style={message.type === "success" ? successMessageStyle : errorMessageStyle}>
-                    {message.text}
-                </div>
+                <Callout variant={message.type === "success" ? "success" : "warning"} marginBottom="stack-lg" onClose={() => setMessage(null)}>
+                    <Content>{message.text}</Content>
+                </Callout>
             )}
 
-            <form onSubmit={handleSubmit} style={formStyle}>
-                <div style={formGroupStyle}>
-                    <label htmlFor="firstName" style={labelStyle}>First Name *</label>
-                    <input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
+            <Form onSubmit={handleSubmit} UNSAFE_maxWidth="480px">
+                <Stack gap="stack-md">
+                    <TextField
+                        label="First Name"
+                        isRequired
                         value={formData.firstName}
-                        onChange={handleInputChange}
-                        style={inputStyle}
+                        onChange={handleTextChange("firstName")}
                         placeholder="Enter first name"
                     />
-                </div>
 
-                <div style={formGroupStyle}>
-                    <label htmlFor="lastName" style={labelStyle}>Last Name *</label>
-                    <input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
+                    <TextField
+                        label="Last Name"
+                        isRequired
                         value={formData.lastName}
-                        onChange={handleInputChange}
-                        style={inputStyle}
+                        onChange={handleTextChange("lastName")}
                         placeholder="Enter last name"
                     />
-                </div>
 
-                <div style={formGroupStyle}>
-                    <label htmlFor="email" style={labelStyle}>Email *</label>
-                    <input
-                        id="email"
-                        name="email"
+                    <TextField
+                        label="Email"
+                        isRequired
                         type="email"
                         value={formData.email}
-                        onChange={handleInputChange}
-                        style={inputStyle}
+                        onChange={handleTextChange("email")}
                         placeholder="Enter email address"
                     />
-                </div>
 
-                <div style={formGroupStyle}>
-                    <label htmlFor="department" style={labelStyle}>Department *</label>
-                    <select
-                        id="department"
-                        name="department"
-                        value={formData.department}
-                        onChange={handleInputChange}
-                        style={selectStyle}
+                    <Select
+                        label="Department"
+                        isRequired
+                        selectedKey={formData.department || null}
+                        onSelectionChange={handleDepartmentChange}
+                        placeholder="Select a department"
                     >
-                        <option value="">Select a department</option>
                         {departments.map(dept => (
-                            <option key={dept} value={dept}>{dept}</option>
+                            <SelectItem key={dept} id={dept}>{dept}</SelectItem>
                         ))}
-                    </select>
-                </div>
+                    </Select>
 
-                <div style={formGroupStyle}>
-                    <label htmlFor="position" style={labelStyle}>Position *</label>
-                    <input
-                        id="position"
-                        name="position"
-                        type="text"
+                    <TextField
+                        label="Position"
+                        isRequired
                         value={formData.position}
-                        onChange={handleInputChange}
-                        style={inputStyle}
+                        onChange={handleTextChange("position")}
                         placeholder="Enter job position"
                     />
-                </div>
 
-                <div style={formGroupStyle}>
-                    <label htmlFor="hireDate" style={labelStyle}>Hire Date *</label>
-                    <input
-                        id="hireDate"
-                        name="hireDate"
+                    <TextField
+                        label="Hire Date"
+                        isRequired
                         type="date"
                         value={formData.hireDate}
-                        onChange={handleInputChange}
-                        style={inputStyle}
+                        onChange={handleTextChange("hireDate")}
                     />
-                </div>
 
-                <div style={buttonGroupStyle}>
-                    <button type="submit" style={buttonStyle}>
-                        Save Changes
-                    </button>
-                    <button type="button" onClick={handleCancel} style={buttonSecondaryStyle}>
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
+                    <Inline gap="inline-md" marginTop="stack-md">
+                        <Button type="submit" variant="primary">
+                            Save Changes
+                        </Button>
+                        <Button type="button" variant="secondary" onPress={handleCancel}>
+                            Cancel
+                        </Button>
+                    </Inline>
+                </Stack>
+            </Form>
+        </Div>
     );
 }

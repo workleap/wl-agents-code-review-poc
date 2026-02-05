@@ -1,0 +1,14 @@
+@import url("@hopper-ui/components/index.css");
+@import url("@hopper-ui/styled-system/theme/workleap.css");
+
+/* Reset default browser styles */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}

@@ -1,39 +1,40 @@
-import { Link } from "react-router";
-import { containerStyle, pageHeaderStyle, linkStyle, buttonStyle } from "../shared/styles.ts";
+import { Div, Grid, Card, H1, H2, Text, Stack, LinkButton, Link } from "@hopper-ui/components";
 
 export function HomePage() {
     return (
-        <div style={containerStyle}>
-            <div style={pageHeaderStyle}>
-                <h1>Employee Management System</h1>
-                <p>Welcome to the employee management workspace</p>
-            </div>
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+            <Stack gap="stack-md" marginBottom="stack-xl" paddingBottom="inset-md" borderBottom="neutral-weak">
+                <H1>Employee Management System</H1>
+                <Text>Welcome to the employee management workspace</Text>
+            </Stack>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginTop: "30px" }}>
-                <div style={{ padding: "24px", border: "1px solid #e0e0e0", borderRadius: "8px", backgroundColor: "#f9f9f9" }}>
-                    <h2 style={{ marginTop: 0 }}>View Employees</h2>
-                    <p>Browse and search employees in your organization. Filter by department or assigned mandates.</p>
-                    <Link to="/employees" style={{ ...buttonStyle, display: "inline-block", textDecoration: "none" }}>
+            <Grid
+                UNSAFE_templateColumns="repeat(auto-fit, minmax(280px, 1fr))"
+                gap="stack-lg"
+                marginTop="stack-xl"
+            >
+                <Card padding="inset-lg" gap="stack-md">
+                    <H2>View Employees</H2>
+                    <Text>Browse and search employees in your organization. Filter by department or assigned mandates.</Text>
+                    <LinkButton href="/employees" variant="primary">
                         View Employee List
-                    </Link>
-                </div>
+                    </LinkButton>
+                </Card>
 
-                <div style={{ padding: "24px", border: "1px solid #e0e0e0", borderRadius: "8px", backgroundColor: "#f9f9f9" }}>
-                    <h2 style={{ marginTop: 0 }}>Add Employee</h2>
-                    <p>Register a new employee in the system with their personal information and department assignment.</p>
-                    <Link to="/employees/add" style={{ ...buttonStyle, display: "inline-block", textDecoration: "none", backgroundColor: "#28a745" }}>
+                <Card padding="inset-lg" gap="stack-md">
+                    <H2>Add Employee</H2>
+                    <Text>Register a new employee in the system with their personal information and department assignment.</Text>
+                    <LinkButton href="/employees/add" variant="secondary">
                         Add New Employee
-                    </Link>
-                </div>
+                    </LinkButton>
+                </Card>
 
-                <div style={{ padding: "24px", border: "1px solid #e0e0e0", borderRadius: "8px", backgroundColor: "#f9f9f9" }}>
-                    <h2 style={{ marginTop: 0 }}>Quick Stats</h2>
-                    <p>The system currently manages employee records with active project mandates.</p>
-                    <Link to="/employees" style={linkStyle}>
-                        View Details ->
-                    </Link>
-                </div>
-            </div>
-        </div>
+                <Card padding="inset-lg" gap="stack-md">
+                    <H2>Quick Stats</H2>
+                    <Text>The system currently manages employee records with active project mandates.</Text>
+                    <Link href="/employees">View Details &rarr;</Link>
+                </Card>
+            </Grid>
+        </Div>
     );
 }
