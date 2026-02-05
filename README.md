@@ -482,7 +482,7 @@ NOTE: This round is using FRESH injected issues and Claude Code was inspired by 
 - Codex completed in 3 minutes.
 - Confirmed that Claude Code has been able to load the agent skills (https://github.com/workleap/wl-agents-code-review-poc/pull/27#issuecomment-3855302823) but it seems to be having problems reporting the issues found with the knowledge of the agent skills:
     - `Claude requested permissions to write to /tmp/pr_review.md, but you haven't granted it yet.`
-    - I tried to fix this issue by updating the `pull-requests` and `issues` from `read` to `write` but it's not working,.
+    - I tried to fix this issue by updating the `pull-requests` and `issues` from `read` to `write` but it's not working.
 
 ### Summary
 
@@ -541,6 +541,74 @@ Best overall coverage: Copilot, with Codex second. Claude Code missed most of th
 | Input text invisible | Yes | No | Yes |
 | Button outline none | Yes | No | No |
 | Link color low contrast | Yes | No | Yes |
+| Nav contrast low | No | No | No |
+| Error text invisible | No | No | No |
+
+## Round 10 (PR #30) - Copilot vs Claude Code vs Codex
+
+NOTE: This round is using FRESH injected issues and Claude Code was inspired by [SG crawler](https://github.com/workleap/sg-crawler/blob/b5acbac96e13eb1912900886be683b7c87d02d4f/.github/workflows/claude-code-review.yml#L44) workflow.
+
+- Claude Code completed in 4 minute.
+- Codex completed in 2 minutes.
+- Fixed the Claude Code issues to report the issues discovered with the agent skills knowledge by adding `Write` to `allowed_tools`. 
+
+### Summary
+
+- Total intentional issues: 46
+- Copilot coverage: 35/46 (76.1%)
+- Claude Code coverage: 33/46 (71.7%)
+- Codex coverage: 28/46 (60.9%)
+
+Best overall coverage: Copilot, with Claude Code close behind. Codex missed several accessibility and telemetry issues in this round.
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Invalid lang tag (english) | No | Yes | No |
+| useProtectedDataQueries conditional | Yes | Yes | Yes |
+| Unstable query key (Date.now) | Yes | No | Yes |
+| useDeferredRegistrations unstable | Yes | No | Yes |
+| useRenderedNavigationItems wrong signature | Yes | Yes | Yes |
+| Nav links removed from tab order | Yes | Yes | Yes |
+| Nav aria-hidden | Yes | Yes | Yes |
+| PublicRoutes removed | Yes | Yes | Yes |
+| 404 registered as protected | Yes | No | Yes |
+| /login registered as protected | Yes | No | No |
+| Duplicate nav id | Yes | Yes | Yes |
+| Edit route made public | Yes | No | No |
+| Invalid parentId | Yes | Yes | Yes |
+| Scroll listener no cleanup | Yes | Yes | Yes |
+| Interval no cleanup | Yes | Yes | Yes |
+| H1 aria-hidden | Yes | Yes | Yes |
+| Header image missing alt | Yes | Yes | No |
+| Filter aria-describedby missing | Yes | No | No |
+| Department select id mismatch | No | Yes | Yes |
+| Empty aria-label on clear | Yes | Yes | No |
+| Clear button removed from tab order | Yes | Yes | No |
+| Span role button | Yes | Yes | Yes |
+| aria-live assertive | Yes | Yes | No |
+| Table role presentation | Yes | Yes | Yes |
+| Duplicate ids in rows | Yes | Yes | Yes |
+| target=_blank without rel | Yes | Yes | Yes |
+| XSS via dangerouslySetInnerHTML | Yes | Yes | Yes |
+| Icon-only print button lacks name | Yes | No | No |
+| Manual telemetry ids | No | Yes | Yes |
+| Direct LogRocket usage | No | Yes | Yes |
+| Validation scope not ended | Yes | Yes | Yes |
+| Log chain not terminated | Yes | No | Yes |
+| logger.error for success | Yes | Yes | No |
+| Heading level h3 | No | Yes | No |
+| HTTP image without alt | Yes | Yes | No |
+| First name label mismatch | Yes | Yes | Yes |
+| Last name label mismatch | Yes | Yes | No |
+| Email aria-describedby missing | Yes | No | No |
+| Internal notes missing label | No | Yes | Yes |
+| Hire date id duplicate | No | Yes | Yes |
+| Emergency email read-only | No | No | No |
+| Input text invisible | Yes | Yes | Yes |
+| Button outline none | No | No | No |
+| Link color low contrast | Yes | Yes | Yes |
 | Nav contrast low | No | No | No |
 | Error text invisible | No | No | No |
 

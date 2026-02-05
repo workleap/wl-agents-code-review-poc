@@ -46,27 +46,6 @@ jobs:
             Review ONLY the changes introduced by the PR, so consider:
                git log --oneline ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}
 
-            Load and use the following agent skills that are available in the `./.agents/skills` folder to suggest improvements, potential bugs, or issues,
-            but do not limit yourself to the skills.
-
-            Run the following agent skills on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
-                - `/accessibility`
-                - `/best-practices`
-                - `/core-web-vitals`
-                - `/performance`
-                - `/web-quality-audit`
-
-            Run the following agent skills on files based on their imports (changed lines only):
-
-                - Files importing `@squide/*` -> `/workleap-squide`
-                - Files importing `@workleap/logging` -> `/workleap-logging`
-                - Files importing `@workleap/telemetry` -> `/workleap-telemetry`
-                - Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` -> `/workleap-web-configs`
-
-            Run the following agent skills on files matching by name or file type:
-
-                - `turbo.json` -> `/turborepo`
-
             Be concise and specific in your feedback.
 
             When reporting issues:
@@ -132,6 +111,7 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const summary = payload.summary || "No issues found.";
             const baseUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/pull/${prNumber}/files`;
+            const headSha = context.payload.pull_request.head.sha;
 
             if (comments.length === 0) {
               await github.rest.issues.createComment({
@@ -163,6 +143,77 @@ jobs:
               .sort((a, b) => b[1] - a[1])
               .map(([cat, count]) => `- ${cat}: ${count}`);
 
+            const listAllFiles = async () => {
+              const files = [];
+              let page = 1;
+              while (true) {
+                const response = await github.rest.pulls.listFiles({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: prNumber,
+                  per_page: 100,
+                  page
+                });
+                files.push(...response.data);
+                if (response.data.length < 100) {
+                  break;
+                }
+                page += 1;
+              }
+              return files;
+            };
+
+            const buildChangedLineMap = (files) => {
+              const map = new Map();
+
+              for (const file of files) {
+                if (!file.patch) {
+                  continue;
+                }
+
+                const changedLines = new Set();
+                const lines = file.patch.split("\n");
+                let newLine = null;
+
+                for (const line of lines) {
+                  if (line.startsWith("@@")) {
+                    const match = line.match(/\+(\d+)(?:,(\d+))?/);
+                    if (match) {
+                      newLine = Number(match[1]);
+                    } else {
+                      newLine = null;
+                    }
+                    continue;
+                  }
+
+                  if (newLine === null) {
+                    continue;
+                  }
+
+                  if (line.startsWith("+") && !line.startsWith("+++")) {
+                    changedLines.add(newLine);
+                    newLine += 1;
+                    continue;
+                  }
+
+                  if (line.startsWith("-") && !line.startsWith("---")) {
+                    continue;
+                  }
+
+                  newLine += 1;
+                }
+
+                if (changedLines.size > 0) {
+                  map.set(file.filename, changedLines);
+                }
+              }
+
+              return map;
+            };
+
+            const files = await listAllFiles();
+            const changedLineMap = buildChangedLineMap(files);
+
             const buildDiffLink = (path, line) => {
               if (!path || !line) {
                 return null;
@@ -171,13 +222,25 @@ jobs:
               return `${baseUrl}#diff-${hash}R${line}`;
             };
 
+            const buildFileLink = (path, line) => {
+              if (!path || !line) {
+                return null;
+              }
+              return `https://github.com/${context.repo.owner}/${context.repo.repo}/blob/${headSha}/${path}#L${line}`;
+            };
+
             const fileSections = Array.from(byFile.entries()).map(([path, entries]) => {
               const lines = entries.map(c => {
                 const category = c.category || "uncategorized";
                 if (c.line) {
-                  const link = buildDiffLink(path, c.line);
-                  const location = link ? `[${path}:${c.line}](${link})` : `${path}:${c.line}`;
-                  return `- ${location} [${category}] ${c.body}`;
+                  const line = Number(c.line);
+                  const changedLines = changedLineMap.get(path);
+                  const diffLink = changedLines && changedLines.has(line) ? buildDiffLink(path, line) : null;
+                  const fileLink = buildFileLink(path, line);
+                  const location = diffLink ? `[${path}:${line}](diffLink)` : `[${path}:${line}](fileLink)`;
+                  const resolved = diffLink ? `[${path}:${line}](${diffLink})` : `[${path}:${line}](${fileLink})`;
+                  const label = diffLink ? "diff" : "file";
+                  return `- ${resolved} (${label}) [${category}] ${c.body}`;
                 }
                 return `- ${path} [${category}] ${c.body}`;
               });
