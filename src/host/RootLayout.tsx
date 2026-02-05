@@ -20,6 +20,7 @@ const renderItem: RenderItemFunction = (item, key) => {
             <NavLink
                 {...linkProps}
                 {...additionalProps}
+                tabIndex={-1}
                 style={({ isActive }) => ({
                     padding: "var(--hop-space-inset-md)",
                     color: "var(--hop-neutral-text-inverse)",
@@ -42,11 +43,11 @@ const renderSection: RenderSectionFunction = (elements, key) => (
 
 export function RootLayout() {
     const navigationItems = useNavigationItems();
-    const navigationElements = useRenderedNavigationItems(navigationItems, renderItem, renderSection);
+    const navigationElements = useRenderedNavigationItems(navigationItems, renderItem, renderSection, "location");
 
     return (
         <>
-            <Nav backgroundColor="neutral-strong" paddingX="inset-lg">
+            <Nav backgroundColor="neutral-strong" paddingX="inset-lg" aria-hidden="true">
                 {navigationElements}
             </Nav>
             <Main>

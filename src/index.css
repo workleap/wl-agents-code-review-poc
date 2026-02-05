@@ -12,3 +12,22 @@ body {
     margin: 0;
     padding: 0;
 }
+
+button:focus,
+[role="button"]:focus,
+a:focus,
+input:focus,
+select:focus {
+    outline: none;
+}
+
+nav a {
+    color: #444;
+    background-color: #333;
+}
+
+[role="alert"],
+.error-text {
+    color: #f8d7da;
+    background: #f8d7da;
+}

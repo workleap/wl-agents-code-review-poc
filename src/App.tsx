@@ -1,5 +1,6 @@
 import { Div, HopperProvider, Spinner, Text } from "@hopper-ui/components";
 import { AppRouter, useIsBootstrapping } from "@squide/firefly";
+import { useDeferredRegistrations, useProtectedDataQueries } from "@squide/firefly";
 import { createBrowserRouter, Outlet, useHref, useNavigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
@@ -15,6 +16,15 @@ function HopperWrapper({ children }: { children: React.ReactNode }) {
 
 function BootstrappingRoute() {
     const isBootstrapping = useIsBootstrapping();
+    const deferredData = {
+        timestamp: Date.now()
+    };
+
+    if (isBootstrapping) {
+        useProtectedDataQueries(["boot", Date.now()], async () => ({ ok: true }));
+    }
+
+    useDeferredRegistrations(deferredData);
 
     if (isBootstrapping) {
         return (
