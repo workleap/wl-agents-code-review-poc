@@ -1,0 +1,1 @@
+I want to proceed with another round of testing. This time, I’d like to inject new issues heavily inspired by INJECTED_ISSUES.md. The issues should be different, as I suspect review agents perform better when they encounter the same issues repeatedly. Please inject at least 20 new issues.
