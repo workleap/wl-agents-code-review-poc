@@ -13,6 +13,8 @@
 
 ## Round 1 (PR #2) - Copilot vs Claude Code
 
+(IGNORE)
+
 ### Summary
 
 Copilot did the better job overall.
@@ -68,6 +70,8 @@ That said, Claude did catch high‑impact issues (XSS, missing lang, unclosed sc
 | Telemetry | Direct `logrocket` import (umbrella rule) | No | No |
 
 ## Round 2 (PR #4) - Copilot vs Claude Code vs Codex
+
+(IGNORE - was reusing injected issues)
 
 ### Summary
 
@@ -147,6 +151,8 @@ Codex summary comment (issue comment id):
 
 ## Round 3 (PR #11) - Copilot vs Claude Code vs Codex
 
+(IGNORE - was reusing injected issues)
+
 ### Summary
 
 - Total intentional issues: 27
@@ -191,6 +197,8 @@ Note: Codex inline review failed on line resolution and posted a fallback summar
 | logger.error on success | Yes | Yes | Yes |
 
 ## Round 4 (PR #13) - Copilot vs Claude Code vs Codex
+
+(IGNORE - was reusing injected issues)
 
 NOTE: The `INJECTED_ISSUES.md` file was removed from the repository for this round... Without significant changes in terms of time to completion, cost and issues discovery.
 
@@ -548,7 +556,7 @@ Best overall coverage: Copilot, with Codex second. Claude Code missed most of th
 
 NOTE: This round is using FRESH injected issues and Claude Code was inspired by [SG crawler](https://github.com/workleap/sg-crawler/blob/b5acbac96e13eb1912900886be683b7c87d02d4f/.github/workflows/claude-code-review.yml#L44) workflow.
 
-- Claude Code completed in 4 minute.
+- Claude Code completed in 4 minutes.
 - Codex completed in 2 minutes.
 - Fixed the Claude Code issues to report the issues discovered with the agent skills knowledge by adding `Write` to `allowed_tools`. 
 
@@ -611,6 +619,73 @@ Best overall coverage: Copilot, with Claude Code close behind. Codex missed seve
 | Link color low contrast | Yes | Yes | Yes |
 | Nav contrast low | No | No | No |
 | Error text invisible | No | No | No |
+
+## Round 11 (PR #35) - Copilot vs Claude Code vs Codex
+
+NOTE: This round is using FRESH injected issues and Claude Code was inspired by [SG crawler](https://github.com/workleap/sg-crawler/blob/b5acbac96e13eb1912900886be683b7c87d02d4f/.github/workflows/claude-code-review.yml#L44) workflow.
+
+- This is the first review round since the app has been migrated to Hopper.
+- Injected issues now includes Hopper issues and the review instructions now mention to use Hopper MCP server.
+- Claude Code completed in 2 minutes.
+- Codex completed in 2 minutes.
+- Fixed the Claude Code issues to report the issues discovered with the agent skills knowledge by adding `Write` to `allowed_tools`.
+
+### Coverage Summary
+
+| Agent | Issues Found | Coverage |
+| --- | --- | --- |
+| Codex | 30 / 33 | 90.9% |
+| Copilot | 29 / 33 | 87.9% |
+| Claude Code | 28 / 33 | 84.8% |
+| All 3 agents (overlap) | 26 / 33 | 78.8% |
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Invalid `lang="english"` | Yes | Yes | Yes |
+| Conditional `useProtectedDataQueries` hook | Yes | Yes | Yes |
+| `Date.now()` unstable key/data in `App.tsx` | No | No | Yes |
+| `ProtectedRoutes` removed from host root | Yes | Yes | Yes |
+| Duplicate nav item id (`home`) | Yes | Yes | Yes |
+| `useRenderedNavigationItems` called with 4th arg | Yes | Yes | Yes |
+| `tabIndex={-1}` on nav links | Yes | Yes | Yes |
+| `aria-hidden="true"` on nav | Yes | Yes | Yes |
+| Route `$visibility` misuse in employee register | Yes | Yes | No |
+| Missing route parent (`missing-parent-route`) | Yes | Yes | Yes |
+| Scroll listener/interval leak + layout thrash | Yes | Yes | Yes |
+| `aria-hidden="true"` on main `H1` | Yes | No | Yes |
+| Missing `alt` on list page image | Yes | Yes | Yes |
+| Missing `aria-describedby` target (`filter-hint`) | No | No | Yes |
+| Empty `aria-label` + `tabIndex={-1}` on Clear button | Yes | Yes | Yes |
+| `span role="button"` not keyboard accessible | Yes | Yes | Yes |
+| `role="presentation"` on data table | Yes | Yes | Yes |
+| Duplicate IDs in employee list rows | Yes | Yes | Yes |
+| `target="_blank"` missing `rel` | Yes | Yes | Yes |
+| `dangerouslySetInnerHTML` XSS | Yes | Yes | Yes |
+| Add page image missing `alt` + HTTP | Yes | Yes | Yes |
+| Broken label/id associations in add page | Yes | Yes | Yes |
+| Duplicate `id="email"` in add page | Yes | Yes | Yes |
+| Missing `aria-describedby` target (`email-help`) | No | Yes | No |
+| Validation scope created, never ended | Yes | Yes | Yes |
+| Logging chain not finalized | Yes | Yes | Yes |
+| Success logged with `error` level | Yes | Yes | Yes |
+| Manual `"Telemetry Id"` / `"Device Id"` | Yes | Yes | Yes |
+| Direct `LogRocket.identify` usage | Yes | Yes | Yes |
+| Global focus outline removal (`outline: none`) | Yes | Yes | Yes |
+| Low contrast nav links (`#444` on `#333`) | Yes | No | Yes |
+| Invisible alert text (`#f8d7da` on `#f8d7da`) | Yes | Yes | Yes |
+| Heading downgrade (`H1` -> title3) | No | No | No |
+
+### Not Reported By All Agents
+
+- `Date.now()` unstable key/data (`src/App.tsx`)
+- Route `$visibility` misuse (`src/modules/employee/register.tsx`)
+- `aria-hidden` on main `H1` (`src/modules/employee/pages/EmployeeListPage.tsx`)
+- Missing `aria-describedby="filter-hint"` target (`src/modules/employee/pages/EmployeeListPage.tsx`)
+- Missing `aria-describedby="email-help"` target (`src/modules/employee/pages/AddEmployeePage.tsx`)
+- Low contrast nav links (`src/index.css`)
+- Heading downgrade (`H1` -> title3) (missed by all)
 
 ## Findings
 
