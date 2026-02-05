@@ -14,9 +14,9 @@ concurrency:
   group: claude-code-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-on:
-  pull_request:
-    types: [opened, synchronize, ready_for_review, reopened]
+# on:
+#   pull_request:
+#     types: [opened, synchronize, ready_for_review, reopened]
 
 jobs:
   claude-review:
