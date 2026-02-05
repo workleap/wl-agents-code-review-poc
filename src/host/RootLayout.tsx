@@ -6,14 +6,8 @@ import {
     type RenderItemFunction,
     type RenderSectionFunction
 } from "@squide/firefly";
-import {
-    navStyle,
-    navListStyle,
-    navItemStyle,
-    navItemActiveStyle
-} from "../shared/styles.ts";
+import { Nav, UL, LI, Main, Text } from "@hopper-ui/components";
 
-// Signature: (item, key, index, level) => ReactNode
 const renderItem: RenderItemFunction = (item, key) => {
     if (!isNavigationLink(item)) {
         return null;
@@ -22,23 +16,28 @@ const renderItem: RenderItemFunction = (item, key) => {
     const { label, linkProps, additionalProps } = item;
 
     return (
-        <li key={key}>
+        <LI key={key} style={{ listStyleType: "none" }}>
             <NavLink
                 {...linkProps}
                 {...additionalProps}
-                style={({ isActive }) => isActive ? navItemActiveStyle : navItemStyle}
+                style={({ isActive }) => ({
+                    padding: "var(--hop-space-inset-md)",
+                    color: "var(--hop-neutral-text-inverse)",
+                    textDecoration: "none",
+                    display: "block",
+                    backgroundColor: isActive ? "var(--hop-primary-surface-strong)" : "transparent"
+                })}
             >
-                {label}
+                <Text color="inherit">{label}</Text>
             </NavLink>
-        </li>
+        </LI>
     );
 };
 
-// Signature: (elements, key, index, level) => ReactNode
 const renderSection: RenderSectionFunction = (elements, key) => (
-    <ul key={key} style={navListStyle}>
+    <UL key={key} display="flex" UNSAFE_gap="0" UNSAFE_margin="0" UNSAFE_padding="0">
         {elements}
-    </ul>
+    </UL>
 );
 
 export function RootLayout() {
@@ -47,12 +46,12 @@ export function RootLayout() {
 
     return (
         <>
-            <nav style={navStyle}>
+            <Nav backgroundColor="neutral-strong" paddingX="inset-lg">
                 {navigationElements}
-            </nav>
-            <main>
+            </Nav>
+            <Main>
                 <Outlet />
-            </main>
+            </Main>
         </>
     );
 }

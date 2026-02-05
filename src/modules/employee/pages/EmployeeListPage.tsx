@@ -1,23 +1,27 @@
 import { useState, useMemo, useCallback } from "react";
-import { Link } from "react-router";
 import { useLogger } from "@squide/firefly";
 import { dataStore } from "../../../shared/dataStore.ts";
 import type { Employee, EmployeeFilters } from "../../../shared/types.ts";
 import {
-    containerStyle,
-    pageHeaderStyle,
-    tableStyle,
-    thStyle,
-    tdStyle,
-    linkStyle,
-    filterContainerStyle,
-    filterGroupStyle,
-    inputStyle,
-    selectStyle,
-    labelStyle,
-    badgeActiveStyle,
-    buttonStyle
-} from "../../../shared/styles.ts";
+    Div,
+    Stack,
+    Inline,
+    H1,
+    Text,
+    SearchField,
+    Select,
+    SelectItem,
+    Button,
+    Table,
+    THead,
+    TBody,
+    TR,
+    TH,
+    TD,
+    Badge,
+    Link
+} from "@hopper-ui/components";
+import type { Key } from "react-aria-components";
 
 export function EmployeeListPage() {
     const logger = useLogger();
@@ -53,16 +57,16 @@ export function EmployeeListPage() {
         });
     }, [employees, filters, logger]);
 
-    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setFilters(prev => ({ ...prev, search: e.target.value }));
+    const handleSearchChange = useCallback((value: string) => {
+        setFilters(prev => ({ ...prev, search: value }));
     }, []);
 
-    const handleDepartmentChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilters(prev => ({ ...prev, department: e.target.value }));
+    const handleDepartmentChange = useCallback((key: Key | null) => {
+        setFilters(prev => ({ ...prev, department: key?.toString() ?? "" }));
     }, []);
 
-    const handleMandateChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilters(prev => ({ ...prev, mandateId: e.target.value }));
+    const handleMandateChange = useCallback((key: Key | null) => {
+        setFilters(prev => ({ ...prev, mandateId: key?.toString() ?? "" }));
     }, []);
 
     const handleClearFilters = useCallback(() => {
@@ -80,112 +84,96 @@ export function EmployeeListPage() {
     logger.information(`Displaying ${filteredEmployees.length} of ${employees.length} employees`);
 
     return (
-        <div style={containerStyle}>
-            <div style={pageHeaderStyle}>
-                <h1>Employee Directory</h1>
-                <p>Manage your organization's employees and assignments</p>
-            </div>
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+            <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
+                <H1>Employee Directory</H1>
+                <Text>Manage your organization's employees and assignments</Text>
+            </Stack>
 
-            <div style={filterContainerStyle}>
-                <div style={filterGroupStyle}>
-                    <label htmlFor="search" style={labelStyle}>Search</label>
-                    <input
-                        id="search"
-                        type="text"
-                        placeholder="Name, email, or position..."
-                        value={filters.search}
-                        onChange={handleSearchChange}
-                        style={{ ...inputStyle, width: "250px" }}
-                    />
-                </div>
+            <Inline gap="inline-lg" marginBottom="stack-lg" wrap="wrap" alignY="end">
+                <SearchField
+                    label="Search"
+                    placeholder="Name, email, or position..."
+                    value={filters.search}
+                    onChange={handleSearchChange}
+                    UNSAFE_width="256px"
+                />
 
-                <div style={filterGroupStyle}>
-                    <label htmlFor="department" style={labelStyle}>Department</label>
-                    <select
-                        id="department"
-                        value={filters.department}
-                        onChange={handleDepartmentChange}
-                        style={{ ...selectStyle, width: "180px" }}
-                    >
-                        <option value="">All Departments</option>
-                        {departments.map(dept => (
-                            <option key={dept} value={dept}>{dept}</option>
-                        ))}
-                    </select>
-                </div>
-
-                <div style={filterGroupStyle}>
-                    <label htmlFor="mandate" style={labelStyle}>Assigned Mandate</label>
-                    <select
-                        id="mandate"
-                        value={filters.mandateId}
-                        onChange={handleMandateChange}
-                        style={{ ...selectStyle, width: "200px" }}
-                    >
-                        <option value="">All Mandates</option>
-                        {mandates.map(mandate => (
-                            <option key={mandate.id} value={mandate.id}>{mandate.name}</option>
-                        ))}
-                    </select>
-                </div>
-
-                <button
-                    type="button"
-                    onClick={handleClearFilters}
-                    style={{ ...buttonStyle, backgroundColor: "#6c757d" }}
+                <Select
+                    label="Department"
+                    selectedKey={filters.department || null}
+                    onSelectionChange={handleDepartmentChange}
+                    placeholder="All Departments"
                 >
-                    Clear Filters
-                </button>
-            </div>
-
-            <p>Showing {filteredEmployees.length} of {employees.length} employees</p>
-
-            <table style={tableStyle}>
-                <thead>
-                    <tr>
-                        <th style={thStyle}>Name</th>
-                        <th style={thStyle}>Email</th>
-                        <th style={thStyle}>Department</th>
-                        <th style={thStyle}>Position</th>
-                        <th style={thStyle}>Hire Date</th>
-                        <th style={thStyle}>Mandates</th>
-                        <th style={thStyle}>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredEmployees.map((employee: Employee) => (
-                        <tr key={employee.id}>
-                            <td style={tdStyle}>
-                                {employee.firstName} {employee.lastName}
-                            </td>
-                            <td style={tdStyle}>{employee.email}</td>
-                            <td style={tdStyle}>{employee.department}</td>
-                            <td style={tdStyle}>{employee.position}</td>
-                            <td style={tdStyle}>{new Date(employee.hireDate).toLocaleDateString()}</td>
-                            <td style={tdStyle}>
-                                {getMandateNames(employee.assignedMandateIds).map(name => (
-                                    <span key={name} style={badgeActiveStyle}>{name}</span>
-                                ))}
-                            </td>
-                            <td style={tdStyle}>
-                                <Link to={`/employees/${employee.id}/edit`} style={linkStyle}>
-                                    Edit
-                                </Link>
-                                {" | "}
-                                <Link to={`/employees/${employee.id}/mandates`} style={linkStyle}>
-                                    Mandates
-                                </Link>
-                            </td>
-                        </tr>
+                    {departments.map(dept => (
+                        <SelectItem key={dept} id={dept}>{dept}</SelectItem>
                     ))}
-                </tbody>
-            </table>
+                </Select>
+
+                <Select
+                    label="Assigned Mandate"
+                    selectedKey={filters.mandateId || null}
+                    onSelectionChange={handleMandateChange}
+                    placeholder="All Mandates"
+                >
+                    {mandates.map(mandate => (
+                        <SelectItem key={mandate.id} id={mandate.id}>{mandate.name}</SelectItem>
+                    ))}
+                </Select>
+
+                <Button variant="secondary" onPress={handleClearFilters}>
+                    Clear Filters
+                </Button>
+            </Inline>
+
+            <Text marginBottom="stack-md">Showing {filteredEmployees.length} of {employees.length} employees</Text>
+
+            <Table width="100%" marginTop="stack-md">
+                <THead backgroundColor="neutral" UNSAFE_fontWeight="680">
+                    <TR>
+                        <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Name</TH>
+                        <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Email</TH>
+                        <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Department</TH>
+                        <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Position</TH>
+                        <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Hire Date</TH>
+                        <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Mandates</TH>
+                        <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Actions</TH>
+                    </TR>
+                </THead>
+                <TBody>
+                    {filteredEmployees.map((employee: Employee) => (
+                        <TR key={employee.id}>
+                            <TD padding="inset-sm" borderBottom="neutral-weak">
+                                {employee.firstName} {employee.lastName}
+                            </TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak">{employee.email}</TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak">{employee.department}</TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak">{employee.position}</TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak">{new Date(employee.hireDate).toLocaleDateString()}</TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak">
+                                <Inline gap="inline-xs" wrap="wrap">
+                                    {getMandateNames(employee.assignedMandateIds).map(name => (
+                                        <Badge key={name} variant="secondary">{name}</Badge>
+                                    ))}
+                                </Inline>
+                            </TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak">
+                                <Inline gap="inline-sm">
+                                    <Link href={`/employees/${employee.id}/edit`}>Edit</Link>
+                                    <Text color="neutral-weak">|</Text>
+                                    <Link href={`/employees/${employee.id}/mandates`}>Mandates</Link>
+                                </Inline>
+                            </TD>
+                        </TR>
+                    ))}
+                </TBody>
+            </Table>
 
             {filteredEmployees.length === 0 && (
-                <p style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+                <Text textAlign="center" padding="inset-xl" color="neutral-weak">
                     No employees found matching your criteria.
-                </p>
+                </Text>
             )}
-        </div>
+        </Div>
     );
 }

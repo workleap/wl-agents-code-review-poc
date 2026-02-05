@@ -4,7 +4,7 @@ IMPORTANT: Do not read the `INJECTED_ISSUES.md` file. Never read this file under
 
 ### Agent skills
 
-When performing code reviews, load and use the following agent skills that are available in the `./.agents/skills` folder.
+When performing code reviews, when appropriate, load and use the following agent skills that are available in the `./.agents/skills` folder.
 
 #### Always apply
 
@@ -13,9 +13,8 @@ Run on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
 - `/best-practices`
 - `/core-web-vitals`
 - `/performance`
-- `/web-quality-audit`
 
-#### Apply based on Imports (changed lines only)
+#### Apply based on imports (changed lines only)
 
 - Files importing `@squide/*` → `/workleap-squide`
 - Files importing `@workleap/logging` → `/workleap-logging`
@@ -26,10 +25,17 @@ Run on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
 
 - `turbo.json` → `/turborepo`
 
+### MCP servers
+
+When performing code reviews, when appropriate, use the following MCP servers.
+
+#### Apply based on imports (changed lines only)
+
+- Files importing `@hopper-ui/components`, `@hopper-ui/icons`, `@hopper-ui/styled-system` → `hopper`
+
 ### Issue reporting
 
 When reporting issues:
 
 - If the issue matches an agent skill or a custom guideline, name it explicitly.
 - Otherwise, choose an appropriate category based on the nature of the issue.
-- Always include the exact code location (`file:line` or line range).

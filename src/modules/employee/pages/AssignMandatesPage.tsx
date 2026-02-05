@@ -1,23 +1,23 @@
-// TEST
-
 import { useLogger } from "@squide/firefly";
 import { RootLogger } from "@workleap/logging";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
-import {
-    buttonGroupStyle,
-    buttonSecondaryStyle,
-    buttonStyle,
-    checkboxContainerStyle,
-    checkboxLabelStyle,
-    containerStyle,
-    errorMessageStyle,
-    labelStyle,
-    pageHeaderStyle,
-    successMessageStyle
-} from "../../../shared/styles.ts";
 import type { Employee, Mandate } from "../../../shared/types.ts";
+import {
+    Div,
+    Stack,
+    Inline,
+    H1,
+    Text,
+    Button,
+    Form,
+    Callout,
+    Content,
+    Spinner,
+    Checkbox,
+    Label
+} from "@hopper-ui/components";
 
 export function AssignMandatesPage() {
     const logger = useLogger();
@@ -95,79 +95,84 @@ export function AssignMandatesPage() {
 
     if (notFound) {
         return (
-            <div style={containerStyle}>
-                <div style={pageHeaderStyle}>
-                    <h1>Employee Not Found</h1>
-                </div>
-                <p>The requested employee could not be found.</p>
-                <button type="button" onClick={() => navigate("/employees")} style={buttonStyle}>
+            <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+                <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
+                    <H1>Employee Not Found</H1>
+                </Stack>
+                <Text marginBottom="stack-lg">The requested employee could not be found.</Text>
+                <Button variant="primary" onPress={() => navigate("/employees")}>
                     Back to Employee List
-                </button>
-            </div>
+                </Button>
+            </Div>
         );
     }
 
     if (!employee) {
         return (
-            <div style={containerStyle}>
-                <p>Loading...</p>
-            </div>
+            <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" display="flex" justifyContent="center" alignItems="center">
+                <Spinner aria-label="Loading employee data" />
+                <Text marginLeft="inline-md">Loading...</Text>
+            </Div>
         );
     }
 
     return (
-        <div style={containerStyle}>
-            <div style={pageHeaderStyle}>
-                <h1>Assign Mandates</h1>
-                <p>
-                    Assigning mandates to: <strong>{employee.firstName} {employee.lastName}</strong>
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+            <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
+                <H1>Assign Mandates</H1>
+                <Text>
+                    Assigning mandates to: <Text fontWeight="core_680">{employee.firstName} {employee.lastName}</Text>
                     {" "}({employee.position} - {employee.department})
-                </p>
-            </div>
+                </Text>
+            </Stack>
 
             {message && (
-                <div style={message.type === "success" ? successMessageStyle : errorMessageStyle}>
-                    {message.text}
-                </div>
+                <Callout variant={message.type === "success" ? "success" : "warning"} marginBottom="stack-lg" onClose={() => setMessage(null)}>
+                    <Content>{message.text}</Content>
+                </Callout>
             )}
 
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "20px" }}>
-                    <label style={{ ...labelStyle, marginBottom: "12px", display: "block" }}>
-                        Select Active Mandates
-                    </label>
-                    <div style={checkboxContainerStyle}>
-                        {activeMandates.map((mandate: Mandate) => (
-                            <label key={mandate.id} style={checkboxLabelStyle}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedMandateIds.includes(mandate.id)}
+            <Form onSubmit={handleSubmit}>
+                <Stack gap="stack-lg" marginBottom="stack-lg">
+                    <Label UNSAFE_fontWeight="600">Select Active Mandates</Label>
+                    <Div
+                        border="neutral"
+                        borderRadius="rounded-md"
+                        padding="inset-md"
+                        UNSAFE_maxHeight="240px"
+                        overflowY="auto"
+                    >
+                        <Stack gap="stack-md">
+                            {activeMandates.map((mandate: Mandate) => (
+                                <Checkbox
+                                    key={mandate.id}
+                                    isSelected={selectedMandateIds.includes(mandate.id)}
                                     onChange={() => handleMandateToggle(mandate.id)}
-                                />
-                                <span>
-                                    <strong>{mandate.name}</strong>
-                                    <br />
-                                    <span style={{ fontSize: "12px", color: "#666" }}>
-                                        {mandate.description}
-                                    </span>
-                                </span>
-                            </label>
-                        ))}
-                    </div>
-                    <p style={{ marginTop: "8px", fontSize: "14px", color: "#666" }}>
+                                >
+                                    <Stack gap="stack-xs">
+                                        <Text UNSAFE_fontWeight="600">{mandate.name}</Text>
+                                        <Text size="xs" color="neutral-weak">
+                                            {mandate.description}
+                                        </Text>
+                                    </Stack>
+                                </Checkbox>
+                            ))}
+                        </Stack>
+                    </Div>
+                    <Text size="sm" color="neutral-weak">
                         {selectedMandateIds.length} mandate(s) selected
-                    </p>
-                </div>
+                    </Text>
+                </Stack>
 
-                <div style={buttonGroupStyle}>
-                    <button type="submit" style={buttonStyle}>
+                <Inline gap="inline-md">
+                    <Button type="submit" variant="primary">
                         Save Mandates
-                    </button>
-                    <button type="button" onClick={handleCancel} style={buttonSecondaryStyle}>
+                    </Button>
+                    <Button type="button" variant="secondary" onPress={handleCancel}>
                         Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
+                    </Button>
+                </Inline>
+            </Form>
+        </Div>
     );
 }

@@ -1,31 +1,34 @@
-# Code Review Instructions
+## Code Review Instructions
 
-## Agent skills
+IMPORTANT: Do not read the `INJECTED_ISSUES.md` file. Never read this file under any circumstances unless I explicitly ask you too.
 
-When performing code reviews, load and use the following agent skills that are available in the `./.agents/skills` folder.
+### Agent skills
 
-### Always apply
+When performing code reviews, when appropriate, load and use the following agent skills that are available in the `./.agents/skills` folder.
+
+#### Always apply
 
 Run on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
 - `/accessibility`
 - `/best-practices`
 - `/core-web-vitals`
 - `/performance`
-- `/web-quality-audit`
 
-### Apply based on Imports (changed lines only)
+#### Apply based on imports (changed lines only)
 
 - Files importing `@squide/*` → `/workleap-squide`
 - Files importing `@workleap/logging` → `/workleap-logging`
 - Files importing `@workleap/telemetry` → `/workleap-telemetry`
 - Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` → `/workleap-web-configs`
 
-### Apply based on name or file type
+#### Apply based on name or file type
 
 - `turbo.json` → `/turborepo`
 
-## Issue reporting
+### MCP servers
 
-When reporting issues:
+When performing code reviews, when appropriate, use the following MCP servers.
 
-- If the issue matches an agent skill or a custom guideline, name it explicitly.
+#### Apply based on imports (changed lines only)
+
+- Files importing `@hopper-ui/components`, `@hopper-ui/icons`, `@hopper-ui/styled-system` → `hopper`

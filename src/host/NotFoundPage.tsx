@@ -1,19 +1,18 @@
-import { Link } from "react-router";
-import { containerStyle, pageHeaderStyle, buttonStyle } from "../shared/styles.ts";
+import { Div, H1, H2, Text, Stack, LinkButton } from "@hopper-ui/components";
 
 export function NotFoundPage() {
     return (
-        <div style={containerStyle}>
-            <div style={{ ...pageHeaderStyle, textAlign: "center", paddingTop: "60px" }}>
-                <h1 style={{ fontSize: "72px", margin: "0", color: "#ccc" }}>404</h1>
-                <h2>Page Not Found</h2>
-                <p>The page you are looking for does not exist or has been moved.</p>
-            </div>
-            <div style={{ textAlign: "center" }}>
-                <Link to="/" style={{ ...buttonStyle, display: "inline-block", textDecoration: "none" }}>
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+            <Stack gap="stack-md" alignX="center" paddingTop="inset-xl">
+                <H1 size="xl" color="neutral-weakest">404</H1>
+                <H2>Page Not Found</H2>
+                <Text>The page you are looking for does not exist or has been moved.</Text>
+            </Stack>
+            <Div textAlign="center" marginTop="stack-xl">
+                <LinkButton href="/" variant="primary">
                     Go to Home
-                </Link>
-            </div>
-        </div>
+                </LinkButton>
+            </Div>
+        </Div>
     );
 }
