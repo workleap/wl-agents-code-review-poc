@@ -16,26 +16,29 @@ Run on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
 
 #### Apply based on imports (changed lines only)
 
-- Files importing `@squide/*` → `/workleap-squide`
-- Files importing `@workleap/logging` → `/workleap-logging`
-- Files importing `@workleap/telemetry` → `/workleap-telemetry`
-- Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` → `/workleap-web-configs`
+- Files importing `@squide/*` -> `/workleap-squide`
+- Files importing `@workleap/logging` -> `/workleap-logging`
+- Files importing `@workleap/telemetry` -> `/workleap-telemetry`
+- Files importing `@workleap/browserslist-config`, `@workleap/eslint-configs`, `@workleap/stylelint-plugin`, `@workleap/typescript-configs`, `@workleap/rsbuild-configs`, `@workleap/rslib-configs` -> `/workleap-web-configs`
 
 #### Apply based on name or file type
 
-- `turbo.json` → `/turborepo`
+- `turbo.json` -> `/turborepo`
 
-### MCP servers
+### Mandatory Hopper MCP validation
 
-When performing code reviews, when appropriate, use the following MCP servers.
+When changed lines include imports from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system`, Hopper MCP validation is mandatory.
 
-#### Apply based on imports (changed lines only)
-
-- Files importing `@hopper-ui/components`, `@hopper-ui/icons`, `@hopper-ui/styled-system` → `hopper`
+Required behavior:
+- Query the `hopper` MCP server before finalizing the review.
+- Validate Hopper usage only on changed lines.
+- Include Hopper-specific findings using category `hopper`.
+- If no Hopper issue is found, explicitly report that Hopper checks were executed and no Hopper issues were identified.
 
 ### Issue reporting
 
 When reporting issues:
 
 - If the issue matches an agent skill or a custom guideline, name it explicitly.
+- Use category `hopper` for Hopper-specific findings.
 - Otherwise, choose an appropriate category based on the nature of the issue.
