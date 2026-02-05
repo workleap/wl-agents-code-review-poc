@@ -51,3 +51,11 @@ This file tracks the intentional issues we injected for the Copilot/Claude revie
 - `src/modules/employee/pages/AddEmployeePage.tsx`: Import `useMixpanelTrackingFunction` and manually set `"Telemetry Id"` / `"Device Id"` in event properties (should be automatic).
 - `src/modules/employee/pages/AddEmployeePage.tsx`: Import `logrocket` directly and call `LogRocket.identify` (violates umbrella package guidance).
 - `src/modules/employee/pages/AddEmployeePage.tsx`: Use `logger.error` for a successful action (wrong log level).
+
+## Hopper UI (MCP-targeted)
+
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Replace the native `<button>` actions with `@hopper-ui/components` `Button`, but wire invalid `appearance` values (e.g. `"primaryy"`, `"secondaryy"`) to trigger Hopper prop corrections.
+- `src/modules/employee/pages/EmployeeListPage.tsx`: Replace the "Reset" pseudo-button with Hopper `Button` and `Icon`, but render icon-only actions without `aria-label` or accessible text so Hopper accessibility patterns are required.
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Introduce Hopper `TextInput`/`Select` usage but keep legacy mismatched `id`/`htmlFor` associations instead of Hopper `Field` composition.
+- `src/modules/employee/pages/EmployeeListPage.tsx`: Add `@hopper-ui/styled-system` tokens in inline style objects with non-existent token keys (e.g. `color: "neutral.999"`, `space: "11"`), requiring Hopper token normalization.
+- `src/modules/employee/pages/EmployeeListPage.tsx`: Mix raw HTML controls and Hopper controls in the same filter row (native `input/select` + Hopper `Button`) causing inconsistent variants/sizes that should be unified via Hopper component patterns.
