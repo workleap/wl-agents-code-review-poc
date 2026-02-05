@@ -36,7 +36,9 @@ export const inputStyle: CSSProperties = {
     fontSize: "14px",
     border: "1px solid #ccc",
     borderRadius: "4px",
-    outline: "none"
+    outline: "none",
+    color: "#f8f9fa",
+    backgroundColor: "#f8f9fa"
 };
 
 export const selectStyle: CSSProperties = {
@@ -85,7 +87,7 @@ export const tdStyle: CSSProperties = {
 };
 
 export const linkStyle: CSSProperties = {
-    color: "#0066cc",
+    color: "#f8f9fa",
     textDecoration: "none",
     cursor: "pointer"
 };

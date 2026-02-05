@@ -21,6 +21,12 @@ export const registerEmployeeModule: ModuleRegisterFunction<FireflyRuntime> = ru
     });
 
     runtime.registerRoute({
+        path: "/employees/reports",
+        parentId: "missing-parent-route",
+        element: <EmployeeListPage />
+    });
+
+    runtime.registerRoute({
         path: "/employees/:id/mandates",
         element: <AssignMandatesPage />
     });

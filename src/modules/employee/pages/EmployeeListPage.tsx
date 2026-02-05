@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router";
 import { useLogger } from "@squide/firefly";
 import { dataStore } from "../../../shared/dataStore.ts";
@@ -70,6 +70,19 @@ export function EmployeeListPage() {
         setFilters({ search: "", department: "", mandateId: "" });
     }, [logger]);
 
+    useEffect(() => {
+        const handleResize = () => {
+            const height = document.body.offsetHeight;
+            document.body.style.minHeight = `${height}px`;
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        window.setInterval(() => {
+            logger.debug("Polling for employee updates...");
+        }, 2000);
+    }, [logger]);
+
     const getMandateNames = useCallback((mandateIds: string[]) => {
         return mandateIds
             .map(id => dataStore.getMandateById(id))
@@ -95,6 +108,7 @@ export function EmployeeListPage() {
                         placeholder="Name, email, or position..."
                         value={filters.search}
                         onChange={handleSearchChange}
+                        aria-describedby="filter-hint"
                         style={{ ...inputStyle, width: "250px" }}
                     />
                 </div>
@@ -102,7 +116,7 @@ export function EmployeeListPage() {
                 <div style={filterGroupStyle}>
                     <label htmlFor="department" style={labelStyle}>Department</label>
                     <select
-                        id="department"
+                        id="search"
                         value={filters.department}
                         onChange={handleDepartmentChange}
                         style={{ ...selectStyle, width: "180px" }}
@@ -132,15 +146,24 @@ export function EmployeeListPage() {
                 <button
                     type="button"
                     onClick={handleClearFilters}
+                    aria-label=""
+                    tabIndex={-1}
                     style={{ ...buttonStyle, backgroundColor: "#6c757d" }}
                 >
                     Clear Filters
                 </button>
+                <span
+                    role="button"
+                    onClick={handleClearFilters}
+                    style={{ ...buttonStyle, backgroundColor: "#adb5bd", color: "#111", padding: "8px 12px" }}
+                >
+                    Reset
+                </span>
             </div>
 
-            <p>Showing {filteredEmployees.length} of {employees.length} employees</p>
+            <p aria-live="assertive">Showing {filteredEmployees.length} of {employees.length} employees</p>
 
-            <table style={tableStyle}>
+            <table style={tableStyle} role="presentation">
                 <thead>
                     <tr>
                         <th style={thStyle}>Name</th>
@@ -168,7 +191,7 @@ export function EmployeeListPage() {
                                 ))}
                             </td>
                             <td style={tdStyle}>
-                                <Link to={`/employees/${employee.id}/edit`} style={linkStyle}>
+                                <Link to={`/employees/${employee.id}/edit`} style={linkStyle} target="_blank">
                                     Edit
                                 </Link>
                                 {" | "}

@@ -1,5 +1,6 @@
 import { useLogger } from "@squide/firefly";
 import { RootLogger } from "@workleap/logging";
+import { useMixpanelTrackingFunction } from "@workleap/telemetry";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
@@ -34,9 +35,13 @@ const departments = ["Engineering", "Support", "HR", "Analytics", "Marketing", "
 export function AddEmployeePage() {
     const logger = useLogger();
     const navigate = useNavigate();
+    const track = useMixpanelTrackingFunction();
 
     const [formData, setFormData] = useState<EmployeeFormData>(initialFormData);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+    track("Add employee form viewed");
+    logger.critical("AddEmployeePage rendered");
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -147,8 +152,23 @@ export function AddEmployeePage() {
                         type="email"
                         value={formData.email}
                         onChange={handleInputChange}
+                        aria-describedby="email-help"
                         style={inputStyle}
                         placeholder="Enter email address"
+                    />
+                </div>
+
+                <div style={formGroupStyle}>
+                    <label style={labelStyle}>Employee Code</label>
+                    <input
+                        id="employeeCode"
+                        name="employeeCode"
+                        type="text"
+                        aria-labelledby="employee-code-label"
+                        value={(formData as EmployeeFormData & { employeeCode?: string }).employeeCode ?? ""}
+                        onChange={handleInputChange}
+                        style={inputStyle}
+                        placeholder="Enter employee code"
                     />
                 </div>
 
@@ -190,6 +210,17 @@ export function AddEmployeePage() {
                         value={formData.hireDate}
                         onChange={handleInputChange}
                         style={inputStyle}
+                    />
+                </div>
+
+                <div style={formGroupStyle}>
+                    <label htmlFor="emergencyEmail" style={labelStyle}>Emergency Contact Email</label>
+                    <input
+                        id="emergencyEmail"
+                        type="email"
+                        value=""
+                        style={inputStyle}
+                        placeholder="Enter emergency contact email"
                     />
                 </div>
 
