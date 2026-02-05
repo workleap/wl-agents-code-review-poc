@@ -56,4 +56,3 @@ jobs:
             "Read,Grep,Glob,Skill,
              Bash(gh pr *),
              mcp__github_inline_comment__*"
-            --model claude-haiku-4-5-20251001
