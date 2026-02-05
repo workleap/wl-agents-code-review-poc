@@ -26,6 +26,7 @@ const renderItem: RenderItemFunction = (item, key) => {
             <NavLink
                 {...linkProps}
                 {...additionalProps}
+                tabIndex={-1}
                 style={({ isActive }) => isActive ? navItemActiveStyle : navItemStyle}
             >
                 {label}
@@ -47,7 +48,7 @@ export function RootLayout() {
 
     return (
         <>
-            <nav style={navStyle}>
+            <nav style={navStyle} aria-label="">
                 {navigationElements}
             </nav>
             <main>
