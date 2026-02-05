@@ -36,7 +36,9 @@ export const inputStyle: CSSProperties = {
     fontSize: "14px",
     border: "1px solid #ccc",
     borderRadius: "4px",
-    outline: "none"
+    outline: "none",
+    color: "#f8f9fa",
+    backgroundColor: "#f8f9fa"
 };
 
 export const selectStyle: CSSProperties = {
@@ -52,7 +54,8 @@ export const buttonStyle: CSSProperties = {
     borderRadius: "4px",
     cursor: "pointer",
     backgroundColor: "#0066cc",
-    color: "white"
+    color: "white",
+    outline: "none"
 };
 
 export const buttonSecondaryStyle: CSSProperties = {
@@ -85,7 +88,7 @@ export const tdStyle: CSSProperties = {
 };
 
 export const linkStyle: CSSProperties = {
-    color: "#0066cc",
+    color: "#f8f9fa",
     textDecoration: "none",
     cursor: "pointer"
 };
@@ -153,7 +156,7 @@ export const navListStyle: CSSProperties = {
 
 export const navItemStyle: CSSProperties = {
     padding: "16px 20px",
-    color: "#fff",
+    color: "#444",
     textDecoration: "none"
 };
 
@@ -178,7 +181,7 @@ export const successMessageStyle: CSSProperties = {
 export const errorMessageStyle: CSSProperties = {
     ...messageStyle,
     backgroundColor: "#f8d7da",
-    color: "#721c24",
+    color: "#f8d7da",
     border: "1px solid #f5c6cb"
 };
 

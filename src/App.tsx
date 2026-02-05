@@ -1,8 +1,17 @@
-import { AppRouter, useIsBootstrapping } from "@squide/firefly";
+import { AppRouter, useIsBootstrapping, useProtectedDataQueries, useDeferredRegistrations } from "@squide/firefly";
 import { createBrowserRouter, Outlet } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
 function BootstrappingRoute() {
+    useProtectedDataQueries({
+        queries: [{
+            queryKey: ["session", Math.random()],
+            queryFn: async () => ({ ok: true })
+        }]
+    });
+
+    useDeferredRegistrations({ source: "boot", fetchedAt: Date.now() });
+
     const isBootstrapping = useIsBootstrapping();
 
     if (isBootstrapping) {
