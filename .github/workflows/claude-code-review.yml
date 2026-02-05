@@ -48,7 +48,7 @@ jobs:
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           # Uses the default code review plugin, extended by local agent skills instructions in CLAUDE.md.
           plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}. Append "Agent: claude" at the end of every summary and inline comment you post.'
+          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}. When reporting issues, prioritize posting inline comments with GitHub MCP server and append "Agent: Claude" in bold at the end of every inline comment.'
           track_progress: true
           # It's a bit random, the code review plugin seems to use "mcp__github_inline_comment__" to write comments in the PR rather than "gh api".
           claude_args: >-
@@ -56,3 +56,4 @@ jobs:
             "Read,Grep,Glob,Skill,
              Bash(gh pr *),
              mcp__github_inline_comment__*"
+            --model claude-haiku-4-5-20251001
