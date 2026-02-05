@@ -408,7 +408,7 @@ NOTE: This round is using FRESH injected issues and Claude Code was inspired by 
 - Claude Code completed in 4 minute.
 - Codex completed in 3 minutes.
 - Codex reporting was in a single comment due to some of the line numbers in Codex’s output not mapping PR diff lines.
-- Claude Code reporting was in a singlement comment (as configured in the workflow).
+- Claude Code reporting was in a single comment (as configured in the workflow).
 - I suspect Claude Code had issues loading the agent skills (I removed the `.claude/skills` folder).
 
 ### Summary
@@ -473,6 +473,76 @@ Best overall coverage: Copilot, with Codex second. Claude Code missed many Squid
 | Link color low contrast | Yes | No | Yes |
 | Nav contrast low | No | No | Yes |
 | Error text invisible | No | No | Yes |
+
+## Round 9 (PR #27) - Copilot vs Claude Code vs Codex
+
+NOTE: This round is using FRESH injected issues and Claude Code was inspired by [SG crawler](https://github.com/workleap/sg-crawler/blob/b5acbac96e13eb1912900886be683b7c87d02d4f/.github/workflows/claude-code-review.yml#L44) workflow.
+
+- Claude Code completed in 4 minute.
+- Codex completed in 3 minutes.
+- Confirmed that Claude Code has been able to load the agent skills (https://github.com/workleap/wl-agents-code-review-poc/pull/27#issuecomment-3855302823) but it seems to be having issues reporting the issues found with the knowledge of the agent skills:
+    - `Claude requested permissions to write to /tmp/pr_review.md, but you haven't granted it yet.`
+    - I tried to fix this issues by updating the `pull-requests` and `issues` from `read` to `write` but it's not working,.
+
+### Summary
+
+- Total intentional issues: 46
+- Copilot coverage: 39/46 (84.8%)
+- Claude Code coverage: 12/46 (26.1%)
+- Codex coverage: 29/46 (63.0%)
+
+Best overall coverage: Copilot, with Codex second. Claude Code missed most of the Squide/telemetry/logging issues in this round.
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Missing lang attribute | Yes | Yes | Yes |
+| useProtectedDataQueries in bootstrapping | Yes | No | Yes |
+| Unstable query key (Date.now) | Yes | No | Yes |
+| useDeferredRegistrations not called | Yes | No | No |
+| useRenderedNavigationItems wrong signature | Yes | No | Yes |
+| Nav link aria-label empty | Yes | Yes | Yes |
+| Main aria-hidden | Yes | Yes | Yes |
+| PublicRoutes removed | Yes | Yes | Yes |
+| 404 registered as protected | Yes | Yes | Yes |
+| /login registered as protected | No | No | No |
+| Duplicate nav id | Yes | Yes | Yes |
+| Mandates route made public | Yes | No | Yes |
+| Invalid parentId | Yes | Yes | No |
+| Scroll listener no cleanup | Yes | No | Yes |
+| Interval no cleanup | Yes | Yes | Yes |
+| H1 aria-hidden | Yes | Yes | No |
+| Header image missing alt | Yes | Yes | Yes |
+| Filter aria-describedby missing | Yes | No | No |
+| Department select id mismatch | Yes | No | No |
+| Empty aria-label on clear | Yes | No | Yes |
+| Clear button removed from tab order | Yes | No | Yes |
+| Span role button | Yes | No | Yes |
+| aria-live assertive | Yes | No | No |
+| Table role presentation | Yes | Yes | Yes |
+| Duplicate ids in rows | Yes | No | Yes |
+| target=_blank without rel | Yes | No | Yes |
+| XSS via dangerouslySetInnerHTML | Yes | No | Yes |
+| Icon-only print button lacks name | Yes | No | Yes |
+| Manual telemetry ids | Yes | No | Yes |
+| Direct LogRocket usage | Yes | No | No |
+| Validation scope not ended | No | No | Yes |
+| Log chain not terminated | Yes | No | Yes |
+| logger.error for success | No | No | No |
+| Heading level h3 | Yes | Yes | No |
+| HTTP image without alt | Yes | No | No |
+| First name label mismatch | Yes | No | Yes |
+| Last name label mismatch | Yes | No | No |
+| Email aria-describedby missing | Yes | No | Yes |
+| Internal notes missing label | No | No | No |
+| Hire date id duplicate | Yes | No | No |
+| Emergency email read-only | No | No | Yes |
+| Input text invisible | Yes | No | Yes |
+| Button outline none | Yes | No | No |
+| Link color low contrast | Yes | No | Yes |
+| Nav contrast low | No | No | No |
+| Error text invisible | No | No | No |
 
 ## Findings
 
