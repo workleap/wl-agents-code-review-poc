@@ -228,6 +228,61 @@ Best overall coverage: Claude Code. Copilot was close behind. Codex missed a few
 | direct LogRocket identify | Yes | Yes | Yes |
 | logger.error on success | Yes | Yes | Yes |
 
+## Round 5 (PR #16) - Copilot vs Claude Code vs Codex
+
+NOTE: This round is using FRESH injected issues.
+
+- Claude code took 8 minutes to complete and the review cost 4$
+- Codex was done in less than 2 minutes and the review cost about 10 cents.
+- Copilot was done in about 5 minutes
+- Claude reporting was much better than the others though, it provided a lot of information about the issues, including link to the WCAG standard when applicable.
+
+### Summary
+
+- Total intentional issues: 32
+- Copilot coverage: 29/32 (90.6%)
+- Codex coverage: 28/32 (87.5%)
+- Claude Code coverage: 20/32 (62.5%)
+
+Best overall coverage: Copilot, with Codex close behind. Claude Code missed several routing, logging, and accessibility items this round.
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Invalid `lang="en_US"` (BCP-47) | Yes | Yes | Yes |
+| `useDeferredRegistrations` called with unstable `deferredData` | No | No | No |
+| `useProtectedDataQueries` unstable query key | Yes | Yes | Yes |
+| Missing `waitForProtectedData` on AppRouter | No | No | No |
+| `PublicRoutes` removed from host root | Yes | Yes | Yes |
+| `/login` registered to NotFound | Yes | No | Yes |
+| Duplicate nav item id | Yes | Yes | Yes |
+| Empty `aria-label` on nav | Yes | Yes | No |
+| `NavLink` removed from tab order | Yes | Yes | Yes |
+| `$visibility: "public"` on `/employees/add` | Yes | No | Yes |
+| Missing `parentId` for `/employees/reports` | Yes | No | Yes |
+| Deferred registration callback never executed | Yes | No | No |
+| Scroll listener no cleanup + layout thrash | Yes | Yes | Yes |
+| XSS via `dangerouslySetInnerHTML` | Yes | Yes | Yes |
+| Icon-only button lacks accessible name | Yes | Yes | Yes |
+| `div role="button"` not keyboard accessible | No | No | Yes |
+| `aria-hidden` on `<h1>` | Yes | No | Yes |
+| Duplicate IDs in table rows | Yes | Yes | Yes |
+| Image missing `alt` (EmployeeListPage) | Yes | Yes | Yes |
+| Label/id mismatch in Department filter | Yes | Yes | Yes |
+| Log chain without terminal method | Yes | No | Yes |
+| Heading `h1` to `h3` | Yes | No | Yes |
+| `http://` image missing `alt` and dimensions | Yes | Yes | Yes |
+| Unlabeled "Internal notes" input | Yes | No | Yes |
+| Broken label associations | Yes | Yes | Yes |
+| Validation scope not ended | Yes | Yes | Yes |
+| `outline: none` | Yes | Yes | Yes |
+| Low nav contrast | Yes | Yes | Yes |
+| Error text invisible | Yes | Yes | Yes |
+| Manual Telemetry Id / Device Id | Yes | Yes | Yes |
+| Direct `LogRocket.identify` | Yes | Yes | Yes |
+| `logger.error` for success | Yes | No | Yes |
+
 ## Findings
 
 ### Claude Code can only validate the changes of the PR even if instructions say otherwise
