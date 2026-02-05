@@ -1,7 +1,7 @@
+import { Div, HopperProvider, Spinner, Text } from "@hopper-ui/components";
 import { AppRouter, useIsBootstrapping } from "@squide/firefly";
-import { createBrowserRouter, Outlet, useNavigate, useHref } from "react-router";
+import { createBrowserRouter, Outlet, useHref, useNavigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { HopperProvider, Div, Spinner, Text } from "@hopper-ui/components";
 
 function HopperWrapper({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ function BootstrappingRoute() {
 
     if (isBootstrapping) {
         return (
-            <Div display="flex" justifyContent="center" alignItems="center" height="100vh" UNSAFE_gap="space-160">
+            <Div display="flex" justifyContent="center" alignItems="center" height="100vh" gap="space-160">
                 <Spinner aria-label="Loading" />
                 <Text>Loading employee workspace...</Text>
             </Div>
