@@ -232,10 +232,10 @@ Best overall coverage: Claude Code. Copilot was close behind. Codex missed a few
 
 NOTE: This round is using FRESH injected issues.
 
-- Claude code took 8 minutes to complete and the review cost 4$
+- Claude Code took 8 minutes to complete and the review cost 4$.
 - Codex was done in less than 2 minutes and the review cost about 10 cents.
-- Copilot was done in about 5 minutes
-- Claude reporting was much better than the others though, it provided a lot of information about the issues, including link to the WCAG standard when applicable.
+- Copilot was done in about 5 minutes.
+- Claude Claude Code reporting was much better than the others though, it provided a lot of information about the issues, including link to the WCAG standard when applicable.
 
 ### Summary
 
@@ -282,6 +282,55 @@ Best overall coverage: Copilot, with Codex close behind. Claude Code missed seve
 | Manual Telemetry Id / Device Id | Yes | Yes | Yes |
 | Direct `LogRocket.identify` | Yes | Yes | Yes |
 | `logger.error` for success | Yes | No | Yes |
+
+## Round 6 (PR #18) - Copilot vs Claude Code vs Codex
+
+NOTE: This round is using FRESH injected issues.
+
+- Claude Code complexted in 2 minutes.
+- Codex completed in 1 minutes.
+- Codex reporting was pretty good.
+- Claude Code reporting was in a single comment.
+
+### Summary
+
+- Total intentional issues: 26
+- Copilot coverage: 19/26 (73.1%)
+- Claude Code coverage: 22/26 (84.6%)
+- Codex coverage: 22/26 (84.6%)
+
+Best overall coverage: Claude Code and Codex tied for first, with Copilot trailing. Missed by all: missing `waitForProtectedData`.
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Unstable query key (Math.random) | Yes | Yes | Yes |
+| Missing waitForProtectedData | No | No | No |
+| PublicRoutes removed from root | No | Yes | Yes |
+| 404 registered as protected (registerRoute) | Yes | No | Yes |
+| /login registered as protected | Yes | No | No |
+| Duplicate navigation item id ($id) | No | Yes | Yes |
+| Nav links removed from tab order (tabIndex=-1) | Yes | Yes | Yes |
+| Nav hidden from AT (aria-hidden) | Yes | Yes | Yes |
+| Invalid parentId for /employees/reports | Yes | Yes | Yes |
+| Resize listener + layout thrash without cleanup | Yes | Yes | Yes |
+| setInterval without cleanup | Yes | Yes | Yes |
+| aria-describedby references missing element | No | Yes | Yes |
+| Duplicate id='search' on input/select | No | Yes | Yes |
+| Empty aria-label on button | Yes | Yes | No |
+| Button removed from tab order (tabIndex=-1) | Yes | Yes | Yes |
+| Span role=button without keyboard support | Yes | Yes | Yes |
+| aria-live='assertive' for non-urgent updates | Yes | Yes | No |
+| Table role=presentation on data table | Yes | Yes | Yes |
+| target=_blank without context | Yes | Yes | Yes |
+| Mixpanel track called on render | Yes | No | Yes |
+| logger.critical used for render | Yes | Yes | Yes |
+| email aria-describedby points to missing id | No | Yes | Yes |
+| Employee code label not associated | Yes | Yes | Yes |
+| Emergency email input is read-only | No | Yes | Yes |
+| Input text invisible (color == background) | Yes | Yes | Yes |
+| Link color low contrast | Yes | Yes | Yes |
 
 ## Findings
 
