@@ -480,9 +480,9 @@ NOTE: This round is using FRESH injected issues and Claude Code was inspired by 
 
 - Claude Code completed in 4 minute.
 - Codex completed in 3 minutes.
-- Confirmed that Claude Code has been able to load the agent skills (https://github.com/workleap/wl-agents-code-review-poc/pull/27#issuecomment-3855302823) but it seems to be having issues reporting the issues found with the knowledge of the agent skills:
+- Confirmed that Claude Code has been able to load the agent skills (https://github.com/workleap/wl-agents-code-review-poc/pull/27#issuecomment-3855302823) but it seems to be having problems reporting the issues found with the knowledge of the agent skills:
     - `Claude requested permissions to write to /tmp/pr_review.md, but you haven't granted it yet.`
-    - I tried to fix this issues by updating the `pull-requests` and `issues` from `read` to `write` but it's not working,.
+    - I tried to fix this issue by updating the `pull-requests` and `issues` from `read` to `write` but it's not working,.
 
 ### Summary
 
