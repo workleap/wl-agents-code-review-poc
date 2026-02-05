@@ -112,6 +112,7 @@ jobs:
         with:
           github-token: ${{ github.token }}
           script: |
+            const crypto = require("crypto");
             let payload;
             try {
               payload = JSON.parse(process.env.CODEX_FINAL_MESSAGE);
@@ -130,6 +131,7 @@ jobs:
             const agentTag = "Agent: codex";
             const prNumber = context.payload.pull_request.number;
             const summary = payload.summary || "No issues found.";
+            const baseUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/pull/${prNumber}/files`;
 
             if (comments.length === 0) {
               await github.rest.issues.createComment({
@@ -161,11 +163,23 @@ jobs:
               .sort((a, b) => b[1] - a[1])
               .map(([cat, count]) => `- ${cat}: ${count}`);
 
+            const buildDiffLink = (path, line) => {
+              if (!path || !line) {
+                return null;
+              }
+              const hash = crypto.createHash("sha1").update(path).digest("hex");
+              return `${baseUrl}#diff-${hash}R${line}`;
+            };
+
             const fileSections = Array.from(byFile.entries()).map(([path, entries]) => {
               const lines = entries.map(c => {
                 const category = c.category || "uncategorized";
-                const location = c.line ? `${path}:${c.line}` : path;
-                return `- ${location} [${category}] ${c.body}`;
+                if (c.line) {
+                  const link = buildDiffLink(path, c.line);
+                  const location = link ? `[${path}:${c.line}](${link})` : `${path}:${c.line}`;
+                  return `- ${location} [${category}] ${c.body}`;
+                }
+                return `- ${path} [${category}] ${c.body}`;
               });
               return [`### ${path}`, ...lines].join("\n");
             });
