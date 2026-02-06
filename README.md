@@ -823,3 +823,100 @@ Injected issues baseline used for coverage: `50`.
 - Low-contrast/weak-weight mandate label styling (`src/modules/employee/pages/AssignMandatesPage.tsx`)
 - Hardcoded wrapper width `maxWidth: "99.5%"` around `<Outlet />` (`src/App.tsx`)
 - Hardcoded main width `maxWidth: "99.7%"` (`src/host/RootLayout.tsx`)
+
+## Round 14 (PR #49) - Copilot vs Claude Code vs Codex
+
+### Data Collection
+
+All PR comment sources were fetched with pagination:
+
+- `issues/49/comments`: 1 page, 2 items
+- `pulls/49/comments` (inline review comments): 1 page, 44 items
+- `pulls/49/reviews`: 1 page, 1 item
+
+### Coverage Summary
+
+Injected issues baseline for this round: `69`.
+
+| Agent | Issues Found | Coverage |
+| --- | --- | --- |
+| Copilot | 33 / 69 | 47.8% |
+| Claude Code | 22 / 69 | 31.9% |
+| Codex | 14 / 69 | 20.3% |
+
+### Comparison Matrix (Reported Issues)
+
+| Reported Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Meta refresh forced reload | Yes | No | Yes |
+| HTTP third-party script in `index.html` | Yes | Yes | Yes |
+| Bootstrapping interval leak | No | No | Yes |
+| Empty spinner aria-label | Yes | Yes | No |
+| `document.title` side-effect in render | Yes | No | No |
+| Public `/employees/:id/edit` host conflict | Yes | Yes | No |
+| Host catch-all route conflict | Yes | Yes | Yes |
+| Duplicate nav id `home` | Yes | No | Yes |
+| Employee list/add exposed as public routes | Yes | Yes | No |
+| Duplicate `/employees/:id/edit` to Add page | No | Yes | Yes |
+| Duplicate nav id `employees` | Yes | No | Yes |
+| Navigation order reversed with `.reverse()` | Yes | No | No |
+| Hardcoded Hopper nav colors/tokens bypass | No | Yes | No |
+| Employee module registered twice | No | Yes | Yes |
+| Aggressive React Query settings | Yes | Yes | No |
+| Large `analyticsNoise` allocation | Yes | Yes | Yes |
+| Scroll layout thrash/listener leak | Yes | Yes | No |
+| List interval leak | Yes | No | No |
+| In-place `.sort()` mutation | Yes | Yes | No |
+| `window.location.hash` mutation on clear | Yes | No | No |
+| `H1` with `role="presentation"` | Yes | No | No |
+| List image HTTP/missing alt issue | Yes | Yes | No |
+| Empty SearchField label | No | No | Yes |
+| Invalid font weight (`930`) | No | Yes | No |
+| `key={Math.random()}` | Yes | Yes | Yes |
+| Duplicate `id="employee-cell"` | No | Yes | No |
+| `dangerouslySetInnerHTML` XSS | Yes | Yes | Yes |
+| `target="_blank"` without `rel` | No | No | Yes |
+| PII log of `employee.email` from list action | Yes | No | No |
+| Add page keydown listener leak | Yes | Yes | No |
+| Add page validation weakened | Yes | No | No |
+| Add page payload logging with PII | Yes | No | No |
+| Add page image HTTP/missing alt | Yes | Yes | No |
+| Add page email `type="text"` | Yes | No | No |
+| Unlabeled internal note field | Yes | No | No |
+| `adminComment` outside shared type | Yes | No | No |
+| Edit page stores email in localStorage | Yes | Yes | Yes |
+| Edit page validation weakened | Yes | No | No |
+| Edit page payload logging with PII | Yes | No | No |
+| Edit spinner empty aria-label | No | Yes | No |
+| Assign page uses `getAllMandates()` | Yes | Yes | No |
+| Assign label low contrast/weak weight | Yes | No | No |
+
+### Missed By All Agents
+
+- Invalid `lang="en_US"` value
+- `HopperProvider withCssVariables={false}`
+- Invalid Hopper locale (`english-canada`)
+- Hardcoded `maxWidth: "99.2%"` outlet wrapper
+- `ProtectedRoutes` removed from host root
+- `/login` registered with `registerRoute`
+- Duplicate `/employees/:id/mandates` pointing to Add page
+- Inline style on Hopper `Nav`/`Main`
+- External class-based Hopper override (`legacy-nav`)
+- Global Hopper token override in CSS variables
+- Global focus outline removal
+- Search term persisted to localStorage
+- Clear button empty `aria-label` + `tabIndex={-1}`
+- Table `role="presentation"`
+- `span role="button"` without keyboard support
+- Validation errors logged as `critical`
+- Add page stores full employee object in localStorage
+- Success logged at error level
+- Cancel logged at error level
+- Add page `H1 aria-hidden="true"`
+- `autoComplete="off"` on form
+- Inline style on Hopper `Select`
+- Edit page interval + resize listener cleanup leak
+- Edit success logged as `critical`
+- Edit page `outline: none`
+- Assign cancel logged as `warning`
+- Assign inline border-color style override

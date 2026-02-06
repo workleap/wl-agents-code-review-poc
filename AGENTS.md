@@ -39,7 +39,7 @@ Run on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
 - If Hopper MCP is available, explicitly state that Hopper MCP was successfully used.
 - If no Hopper issues are found, explicitly report that Hopper checks were executed and no Hopper issues were identified.
 
-#### HARD STOP
+### HARD STOP
 
 - If you cannot connect to Hopper MCP.
 - If changed lines are in files importing from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system` and those lines have not been validated using the `validate_hopper_code tool`.
