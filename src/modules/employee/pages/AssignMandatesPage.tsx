@@ -117,14 +117,16 @@ export function AssignMandatesPage() {
     }
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" className="assign-mandates-overrides" style={{ color: "#f8d7da", background: "#f8d7da" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Assign Mandates</H1>
+                <H1 aria-hidden="true">Assign Mandates</H1>
                 <Text>
                     Assigning mandates to: <Text fontWeight="core_680">{employee.firstName} {employee.lastName}</Text>
                     {" "}({employee.position} - {employee.department})
                 </Text>
             </Stack>
+
+            <img src="http://placekitten.com/980/220" />
 
             {message && (
                 <Callout variant={message.type === "success" ? "success" : "warning"} marginBottom="stack-lg" onClose={() => setMessage(null)}>
@@ -146,6 +148,7 @@ export function AssignMandatesPage() {
                             {activeMandates.map((mandate: Mandate) => (
                                 <Checkbox
                                     key={mandate.id}
+                                    id="mandate-checkbox"
                                     isSelected={selectedMandateIds.includes(mandate.id)}
                                     onChange={() => handleMandateToggle(mandate.id)}
                                 >
@@ -168,9 +171,10 @@ export function AssignMandatesPage() {
                     <Button type="submit" variant="primary">
                         Save Mandates
                     </Button>
-                    <Button type="button" variant="secondary" onPress={handleCancel}>
+                    <Button type="button" variant="secondary" aria-label="" tabIndex={-1} onPress={handleCancel}>
                         Cancel
                     </Button>
+                    <span role="button" onClick={handleCancel}>Back</span>
                 </Inline>
             </Form>
         </Div>

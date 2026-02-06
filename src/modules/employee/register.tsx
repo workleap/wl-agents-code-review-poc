@@ -12,10 +12,11 @@ export const registerEmployeeModule: ModuleRegisterFunction<FireflyRuntime> = ru
 
     runtime.registerRoute({
         path: "/employees/add",
+        $visibility: "public",
         element: <AddEmployeePage />
     });
 
-    runtime.registerRoute({
+    runtime.registerPublicRoute({
         path: "/employees/:id/edit",
         element: <EditEmployeePage />
     });
@@ -23,6 +24,12 @@ export const registerEmployeeModule: ModuleRegisterFunction<FireflyRuntime> = ru
     runtime.registerRoute({
         path: "/employees/:id/mandates",
         element: <AssignMandatesPage />
+    });
+
+    runtime.registerRoute({
+        path: "/employees/insights",
+        parentPath: "/employees/missing-root",
+        element: <EmployeeListPage />
     });
 
     runtime.registerNavigationItem({

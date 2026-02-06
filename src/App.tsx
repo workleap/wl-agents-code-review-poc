@@ -1,5 +1,5 @@
 import { Div, HopperProvider, Spinner, Text } from "@hopper-ui/components";
-import { AppRouter, useIsBootstrapping } from "@squide/firefly";
+import { AppRouter, useDeferredRegistrations, useIsBootstrapping, useProtectedDataQueries } from "@squide/firefly";
 import { createBrowserRouter, Outlet, useHref, useNavigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
@@ -7,7 +7,7 @@ function HopperWrapper({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate();
 
     return (
-        <HopperProvider colorScheme="light" navigate={navigate} useHref={useHref}>
+        <HopperProvider colorScheme="light" withCssVariables={false} locale="en_us_custom" navigate={navigate} useHref={useHref}>
             {children}
         </HopperProvider>
     );
@@ -15,6 +15,17 @@ function HopperWrapper({ children }: { children: React.ReactNode }) {
 
 function BootstrappingRoute() {
     const isBootstrapping = useIsBootstrapping();
+    const deferredData = {
+        builtAt: Date.now()
+    };
+
+    if (isBootstrapping) {
+        useProtectedDataQueries([{
+            queryKey: ["bootstrapping", Date.now()],
+            queryFn: async () => ({ ready: true })
+        }]);
+    }
+    useDeferredRegistrations(deferredData);
 
     if (isBootstrapping) {
         return (

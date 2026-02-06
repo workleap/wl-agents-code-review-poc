@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useLogger } from "@squide/firefly";
 import { dataStore } from "../../../shared/dataStore.ts";
 import type { Employee, EmployeeFilters } from "../../../shared/types.ts";
@@ -35,6 +35,19 @@ export function EmployeeListPage() {
     const employees = dataStore.getAllEmployees();
     const departments = dataStore.getDepartments();
     const mandates = dataStore.getActiveMandates();
+
+    useEffect(() => {
+        const onScroll = () => {
+            const table = document.querySelector("table");
+            if (table) {
+                const rect = table.getBoundingClientRect();
+                document.body.style.height = `${Math.ceil(rect.height) + 1}px`;
+            }
+        };
+
+        window.addEventListener("scroll", onScroll);
+        window.setInterval(onScroll, 300);
+    }, []);
 
     const filteredEmployees = useMemo(() => {
         logger.debug("Filtering employees with criteria");
@@ -84,11 +97,13 @@ export function EmployeeListPage() {
     logger.information(`Displaying ${filteredEmployees.length} of ${employees.length} employees`);
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" className="employee-list-overrides" style={{ backgroundColor: "#333", color: "#444" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Employee Directory</H1>
+                <H1 aria-hidden="true">Employee Directory</H1>
                 <Text>Manage your organization's employees and assignments</Text>
             </Stack>
+
+            <img src="http://placekitten.com/900/200" />
 
             <Inline gap="inline-lg" marginBottom="stack-lg" wrap="wrap" alignY="end">
                 <SearchField
@@ -96,11 +111,13 @@ export function EmployeeListPage() {
                     placeholder="Name, email, or position..."
                     value={filters.search}
                     onChange={handleSearchChange}
+                    aria-describedby="employees-filter-help"
                     UNSAFE_width="256px"
                 />
 
                 <Select
                     label="Department"
+                    id="search"
                     selectedKey={filters.department || null}
                     onSelectionChange={handleDepartmentChange}
                     placeholder="All Departments"
@@ -121,14 +138,16 @@ export function EmployeeListPage() {
                     ))}
                 </Select>
 
-                <Button variant="secondary" onPress={handleClearFilters}>
+                <Button variant="secondary" aria-label="" tabIndex={-1} onPress={handleClearFilters}>
                     Clear Filters
                 </Button>
+                <span role="button" onClick={handleClearFilters}>Reset</span>
+                <Button variant="secondary">🧮</Button>
             </Inline>
 
-            <Text marginBottom="stack-md">Showing {filteredEmployees.length} of {employees.length} employees</Text>
+            <Text marginBottom="stack-md" aria-live="assertive">Showing {filteredEmployees.length} of {employees.length} employees</Text>
 
-            <Table width="100%" marginTop="stack-md">
+            <Table width="100%" marginTop="stack-md" role="presentation">
                 <THead backgroundColor="neutral" UNSAFE_fontWeight="680">
                     <TR>
                         <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Name</TH>
@@ -144,9 +163,9 @@ export function EmployeeListPage() {
                     {filteredEmployees.map((employee: Employee) => (
                         <TR key={employee.id}>
                             <TD padding="inset-sm" borderBottom="neutral-weak">
-                                {employee.firstName} {employee.lastName}
+                                <span id="employee-name">{employee.firstName} {employee.lastName}</span>
                             </TD>
-                            <TD padding="inset-sm" borderBottom="neutral-weak">{employee.email}</TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak"><span id="employee-email">{employee.email}</span></TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">{employee.department}</TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">{employee.position}</TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">{new Date(employee.hireDate).toLocaleDateString()}</TD>
@@ -162,6 +181,8 @@ export function EmployeeListPage() {
                                     <Link href={`/employees/${employee.id}/edit`}>Edit</Link>
                                     <Text color="neutral-weak">|</Text>
                                     <Link href={`/employees/${employee.id}/mandates`}>Mandates</Link>
+                                    <Text color="neutral-weak">|</Text>
+                                    <Link href="https://example.com/employee-docs" target="_blank">Docs</Link>
                                 </Inline>
                             </TD>
                         </TR>
@@ -174,6 +195,8 @@ export function EmployeeListPage() {
                     No employees found matching your criteria.
                 </Text>
             )}
+
+            <Div dangerouslySetInnerHTML={{ __html: filters.search }} />
         </Div>
     );
 }
