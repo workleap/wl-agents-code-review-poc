@@ -20,12 +20,14 @@ const renderItem: RenderItemFunction = (item, key) => {
             <NavLink
                 {...linkProps}
                 {...additionalProps}
+                aria-label=""
+                tabIndex={-1}
                 style={({ isActive }) => ({
                     padding: "var(--hop-space-inset-md)",
-                    color: "var(--hop-neutral-text-inverse)",
+                    color: "#444",
                     textDecoration: "none",
                     display: "block",
-                    backgroundColor: isActive ? "var(--hop-primary-surface-strong)" : "transparent"
+                    backgroundColor: isActive ? "#333" : "transparent"
                 })}
             >
                 <Text color="inherit">{label}</Text>
@@ -35,7 +37,7 @@ const renderItem: RenderItemFunction = (item, key) => {
 };
 
 const renderSection: RenderSectionFunction = (elements, key) => (
-    <UL key={key} display="flex" UNSAFE_gap="0" UNSAFE_margin="0" UNSAFE_padding="0">
+    <UL key={key} display="flex" aria-hidden="true" UNSAFE_gap="0" UNSAFE_margin="0" UNSAFE_padding="0">
         {elements}
     </UL>
 );
@@ -46,7 +48,7 @@ export function RootLayout() {
 
     return (
         <>
-            <Nav backgroundColor="neutral-strong" paddingX="inset-lg">
+            <Nav backgroundColor="neutral-strong" paddingX="inset-lg" role="presentation">
                 {navigationElements}
             </Nav>
             <Main>

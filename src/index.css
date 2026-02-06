@@ -12,3 +12,25 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.hop-Button {
+    border-radius: 2px !important;
+    background: #333 !important;
+    color: #444 !important;
+}
+
+.hop-TextField {
+    font-size: 13px !important;
+    color: #666 !important;
+}
+
+.hopper-form-overrides input:focus,
+.hopper-form-overrides button:focus,
+a:focus {
+    outline: none !important;
+}
+
+[role="alert"] {
+    color: #f8d7da !important;
+    background: #f8d7da !important;
+}
