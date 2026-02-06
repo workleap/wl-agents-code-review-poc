@@ -687,16 +687,6 @@ NOTE: This round is using FRESH injected issues and Claude Code was inspired by 
 - Low contrast nav links (`src/index.css`)
 - Heading downgrade (`H1` -> title3) (missed by all)
 
-## Findings
-
-### Claude Code can only validate the changes of the PR even if instructions say otherwise
-
-Your CLAUDE.md says "review the entire file for /accessibility", but the plugin's internal validation logic says "pre-existing issues are false positives" - and the plugin     
-wins.
-
-This is a fundamental limitation of the code-review@claude-code-plugins plugin. It's designed to only comment on issues introduced by the PR, regardless of what your CLAUDE.md 
-says.
-
 ## Round 12 (PR #38) - Copilot vs Claude Code vs Codex
 
 ### Coverage Summary
@@ -766,3 +756,70 @@ says.
 
 - Catch-all route registered with `registerRoute` (`src/host/register.tsx`)
 - Emergency email TextField read-only value without `onChange` (`src/modules/employee/pages/AddEmployeePage.tsx`)
+
+## Round 13 (PR #49) - Copilot vs Claude Code vs Codex
+
+NOTE: This round is using FRESH injected issues and Claude Code was inspired by [SG crawler](https://github.com/workleap/sg-crawler/blob/b5acbac96e13eb1912900886be683b7c87d02d4f/.github/workflows/claude-code-review.yml#L44) workflow.
+
+- This is the first review round for which Hopper MCP works for Claude, other agents still can't use MCP server because somehow no agents is able to read then `.mcp.json` file.
+- Claude Code completed in 4 minutes.
+- Codex completed in 2 minutes.
+
+### Data Collection
+
+All PR comment sources were fetched with pagination:
+
+- `issues/49/comments`: 1 page, 2 comments
+- `pulls/49/comments` (inline review comments): 1 page, 44 comments
+- `pulls/49/reviews`: 1 page, 1 review
+
+### Issue Count Summary
+
+Percentages below are coverage against injected issues for this round.
+Injected issues baseline used for coverage: `50`.
+
+| Agent | Issues Found | Coverage |
+| --- | --- | --- |
+| Copilot | 44 / 50 | 88.0% |
+| Claude Code | 29 / 50 | 58.0% |
+| Codex | 18 / 50 | 36.0% |
+
+### Comparison Matrix (Normalized Issue Topics)
+
+| Issue Topic | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| HTTP third-party script in `public/index.html` | Yes | Yes | Yes |
+| Meta refresh reload | Yes | No | Yes |
+| Bootstrap interval leak in `src/App.tsx` | Yes | Yes | Yes |
+| Empty spinner aria-label | Yes | Yes | Yes |
+| Catch-all route conflict in host routes | Yes | Yes | Yes |
+| Duplicate nav id `home` | Yes | No | Yes |
+| Duplicate module registration (`registerEmployeeModule` twice) | Yes | Yes | Yes |
+| Wrong component on employee edit/mandates routes | Yes | Yes | Yes |
+| Duplicate nav id `employees` | Yes | Yes | Yes |
+| Public exposure via `registerPublicRoute` for employee pages | Yes | No | No |
+| Add page PII logging/storage | Yes | No | Yes |
+| Edit page interval/listener cleanup leak | Yes | Yes | Yes |
+| Edit page PII storage/logging | Yes | No | No |
+| 20k analytics array perf issue | Yes | Yes | Yes |
+| Scroll layout thrash / missing cleanup | Yes | Yes | No |
+| `dangerouslySetInnerHTML` XSS risk | Yes | Yes | Yes |
+| `key={Math.random()}` unstable keys | No | Yes | Yes |
+| Empty search field label | Yes | No | Yes |
+| In-place sort mutation in list page | Yes | Yes | No |
+| Validation weakening (email/required/date) | Yes | Yes | No |
+| Aggressive React Query settings | Yes | Yes | No |
+| Hopper style/token violations | No | Yes | No |
+| `document.title` side effect during render | Yes | No | No |
+| `adminComment` not in shared form type | Yes | No | No |
+| `getAllMandates()` vs "active mandates" mismatch | Yes | Yes | No |
+| `target="_blank"` without `rel` | No | No | Yes |
+
+### Missed By All Agents
+
+- Per-keystroke localStorage write of search term (`src/modules/employee/pages/EmployeeListPage.tsx`)
+- Form `autoComplete="off"` regression (`src/modules/employee/pages/AddEmployeePage.tsx`)
+- Focus outline removal via inline style (`src/modules/employee/pages/EditEmployeePage.tsx`)
+- Low-contrast/weak-weight mandate label styling (`src/modules/employee/pages/AssignMandatesPage.tsx`)
+- Hardcoded wrapper width `maxWidth: "99.5%"` around `<Outlet />` (`src/App.tsx`)
+- Hardcoded main width `maxWidth: "99.7%"` (`src/host/RootLayout.tsx`)

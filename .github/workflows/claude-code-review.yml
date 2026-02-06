@@ -41,31 +41,23 @@ jobs:
             Get the diff: gh pr diff ${{ github.event.pull_request.number }}
 
             RULES:
-            - Only flag definite problems introduced by this change (not pre-existing)
-            - Every issue must have a clear fix with file path and line number
-            - Skip style preferences, nitpicks, or things linters catch
-            - No positive observations - focus only on problems
+            - Only report definite issues introduced by this change (not pre-existing ones).
+            - Every reported issue must include a clear fix, with the file path and line number.
+            - Skip style preferences, minor nitpicks, and issues typically caught by linters.
+            - Do not include positive feedback; focus only on problems.
 
-            IMPORTANT: You must read the review instructions from the root AGENTS.md.
+            IMPORTANT:
+            - You must read and follow the review instructions defined in the root AGENTS.md file.
 
             SEVERITY: Critical (data loss/security breach), High (incorrect behavior), Medium (conditional issues), Low (minor/typos).
 
-            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
+            REPORTING: All issues must be reported as inline pull request comments using GitHub MCP.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.claude.com/en/docs/claude-code/cli-reference for available options
           claude_args: >-
             --mcp-config "{\"mcpServers\": {\"hopper\": {\"url\":\"https://hopper.workleap.design/mcp\",\"type\":\"http\"}}}"
             --allowed-tools
             "Read,Write,Grep,Glob,Skill,
-             Bash(gh issue view:*),
-             Bash(gh search:*),
-             Bash(gh issue list:*),
-             Bash(gh pr comment:*),
-             Bash(gh pr diff:*),
-             Bash(gh pr view:*),
-             Bash(gh pr list:*),
-             mcp__hopper__get_guide,
-             mcp__hopper__get_component_doc,
-             mcp__hopper__validate_hopper_code,
-             mcp__hopper__get_design_tokens,
-             mcp__hopper__get_icons"
+             Bash(gh pr *),
+             mcp__github_inline_comment__*
+             mcp__hopper__*"
