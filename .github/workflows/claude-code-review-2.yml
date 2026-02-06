@@ -46,7 +46,6 @@ jobs:
             - Skip style preferences, nitpicks, or things linters catch
             - No positive observations - focus only on problems
             - Read the agent skills instructions from AGENTS.md
-            - Before reviewing, write a comment confirming which agent skills you loaded.
 
             SEVERITY: Critical (data loss/security breach), High (incorrect behavior), Medium (conditional issues), Low (minor/typos)
 

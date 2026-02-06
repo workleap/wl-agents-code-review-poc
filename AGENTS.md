@@ -32,6 +32,7 @@ When changed lines include imports from `@hopper-ui/components`, `@hopper-ui/ico
 Required behavior:
 - Query the `hopper` MCP server before finalizing the review.
 - Validate Hopper usage only on changed lines.
+- Validate changed code with `validate_hopper_code`.
 - Include Hopper-specific findings using category `hopper`.
 - If no Hopper issue is found, explicitly report that Hopper checks were executed and no Hopper issues were identified.
 

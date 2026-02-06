@@ -44,8 +44,6 @@ This file tracks the intentional issues we injected for the Copilot/Claude revie
 - `src/shared/styles.ts`: Reduce nav contrast by setting `navItemStyle.color` to `#444` on `#333` background.
 - `src/shared/styles.ts`: Make error text invisible by setting `errorMessageStyle.color` to `#f8d7da` (same as background).
 
-## Telemetry/Logging (PII/Sensitive)
-
 ## Telemetry/Logging (Non-PII)
 
 - `src/modules/employee/pages/AddEmployeePage.tsx`: Import `useMixpanelTrackingFunction` and manually set `"Telemetry Id"` / `"Device Id"` in event properties (should be automatic).
@@ -54,8 +52,13 @@ This file tracks the intentional issues we injected for the Copilot/Claude revie
 
 ## Hopper UI (MCP-targeted)
 
-- `src/modules/employee/pages/AddEmployeePage.tsx`: Replace the native `<button>` actions with `@hopper-ui/components` `Button`, but wire invalid `appearance` values (e.g. `"primaryy"`, `"secondaryy"`) to trigger Hopper prop corrections.
-- `src/modules/employee/pages/EmployeeListPage.tsx`: Replace the "Reset" pseudo-button with Hopper `Button` and `Icon`, but render icon-only actions without `aria-label` or accessible text so Hopper accessibility patterns are required.
-- `src/modules/employee/pages/AddEmployeePage.tsx`: Introduce Hopper `TextInput`/`Select` usage but keep legacy mismatched `id`/`htmlFor` associations instead of Hopper `Field` composition.
-- `src/modules/employee/pages/EmployeeListPage.tsx`: Add `@hopper-ui/styled-system` tokens in inline style objects with non-existent token keys (e.g. `color: "neutral.999"`, `space: "11"`), requiring Hopper token normalization.
-- `src/modules/employee/pages/EmployeeListPage.tsx`: Mix raw HTML controls and Hopper controls in the same filter row (native `input/select` + Hopper `Button`) causing inconsistent variants/sizes that should be unified via Hopper component patterns.
+- `src/modules/employee/pages/EmployeeListPage.tsx`: Replace Hopper semantic color tokens with raw hex values (for example `#333`/`#444`) in style props where semantic tokens should be used.
+- `src/modules/employee/pages/EmployeeListPage.tsx`: Use core token-like values directly in component styling where semantic tokens are expected for app UI intent.
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Add non-token spacing and sizing values to style props without the `UNSAFE_` prefix.
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Apply non-token values through regular style props instead of using Hopper token props or `UNSAFE_` prefixed props.
+- `src/modules/employee/pages/EmployeeListPage.tsx`: Mix component token CSS variables directly into app-level styles instead of relying on semantic tokens/components.
+- `src/index.css`: Add custom CSS overrides that force Hopper component colors/typography with hard-coded values, bypassing tokens.
+- `src/modules/employee/pages/AddEmployeePage.tsx`: Use React `style={{ ... }}` on Hopper components instead of styled-system props.
+- `src/modules/employee/pages/EmployeeListPage.tsx`: Use external CSS classes to style Hopper components instead of style props/token values.
+- `src/App.tsx`: Configure `HopperProvider` with `withCssVariables={false}` while still relying on Hopper token-based styling.
+- `src/App.tsx`: Set an invalid locale format on `HopperProvider` (non-BCP47) to break localization expectations.
