@@ -1,22 +1,13 @@
-# See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-# or https://code.claude.com/docs/en/cli-reference for available options
-
-# Potential quality improvements
-# - Add back "Task" as an allowed tool. It will degrade the performance though. Must find the right balance.
-
-# Interesting PRs:
-# - https://github.com/patricklafrance/claude-code-review-poc/pull/3
-# - https://github.com/patricklafrance/claude-code-review-poc/pull/4
-
 name: Claude Code Review
 
 concurrency:
   group: claude-code-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-# on:
-#   pull_request:
-#     types: [opened, synchronize, ready_for_review, reopened]
+on:
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize, ready_for_review, reopened]
 
 jobs:
   claude-review:
@@ -43,16 +34,38 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github_token: ${{ github.token }}
-          # Why not https://skills.sh/vercel/turborepo/turborepo?
-          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
-          # Uses the default code review plugin, extended by local agent skills instructions in CLAUDE.md.
-          plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}. When reporting issues, prioritize posting inline comments with GitHub MCP server and append "Agent: Claude" in bold at the end of every inline comment.'
-          track_progress: true
-          # It's a bit random, the code review plugin seems to use "mcp__github_inline_comment__" to write comments in the PR rather than "gh api".
+          prompt: |
+            REPO: ${{ github.repository }}
+
+            Review PR #${{ github.event.pull_request.number }} for bugs, security issues, and code quality problems.
+            Get the diff: gh pr diff ${{ github.event.pull_request.number }}
+
+            RULES:
+            - Only flag definite problems introduced by this change (not pre-existing)
+            - Every issue must have a clear fix with file path and line number
+            - Skip style preferences, nitpicks, or things linters catch
+            - No positive observations - focus only on problems
+
+            IMPORTANT: You must read the review instructions from the root AGENTS.md.
+
+            SEVERITY: Critical (data loss/security breach), High (incorrect behavior), Medium (conditional issues), Low (minor/typos).
+
+            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://docs.claude.com/en/docs/claude-code/cli-reference for available options
           claude_args: >-
-            --allowedTools
-            "Read,Grep,Glob,Skill,
-             Bash(gh pr *),
-             mcp__github_inline_comment__*"
+            --mcp-config "{\"mcpServers\": {\"hopper\": {\"url\":\"https://hopper.workleap.design/mcp\",\"url\":\"http\"}}}"
+            --allowed-tools
+            "Read,Write,Grep,Glob,Skill,
+             Bash(gh issue view:*),
+             Bash(gh search:*),
+             Bash(gh issue list:*),
+             Bash(gh pr comment:*),
+             Bash(gh pr diff:*),
+             Bash(gh pr view:*),
+             Bash(gh pr list:*),
+             mcp__hopper__get_guide,
+             mcp__hopper__get_component_doc,
+             mcp__hopper__validate_hopper_code,
+             mcp__hopper__get_design_tokens,
+             mcp__hopper__get_icons"
