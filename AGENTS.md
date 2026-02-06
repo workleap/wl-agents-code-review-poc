@@ -42,5 +42,4 @@ Required behavior:
 When reporting issues:
 
 - If the issue matches an agent skill or a custom guideline, name it explicitly.
-- Use category `hopper` for Hopper-specific findings.
 - Otherwise, choose an appropriate category based on the nature of the issue.
