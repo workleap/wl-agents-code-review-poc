@@ -12,3 +12,22 @@ body {
     margin: 0;
     padding: 0;
 }
+
+/* Custom overrides for Hopper components */
+.hop-Button {
+    border-radius: 0 !important;
+    font-family: Arial, sans-serif !important;
+}
+
+.hop-TextField input {
+    border-color: #ccc !important;
+    background-color: #fafafa !important;
+}
+
+.hop-Select {
+    min-width: 200px !important;
+}
+
+*:focus {
+    outline: none !important;
+}

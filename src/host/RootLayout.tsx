@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useLocation } from "react-router";
 import {
     useNavigationItems,
     useRenderedNavigationItems,
@@ -21,11 +21,12 @@ const renderItem: RenderItemFunction = (item, key) => {
                 {...linkProps}
                 {...additionalProps}
                 style={({ isActive }) => ({
-                    padding: "var(--hop-space-inset-md)",
-                    color: "var(--hop-neutral-text-inverse)",
+                    padding: "12px 16px",
+                    color: "#ffffff",
                     textDecoration: "none",
                     display: "block",
-                    backgroundColor: isActive ? "var(--hop-primary-surface-strong)" : "transparent"
+                    backgroundColor: isActive ? "#0066cc" : "transparent",
+                    outline: "none"
                 })}
             >
                 <Text color="inherit">{label}</Text>
@@ -41,12 +42,13 @@ const renderSection: RenderSectionFunction = (elements, key) => (
 );
 
 export function RootLayout() {
-    const navigationItems = useNavigationItems();
-    const navigationElements = useRenderedNavigationItems(navigationItems, renderItem, renderSection);
+    const location = useLocation();
+    const navigationItems = useNavigationItems({ menuId: "main" });
+    const navigationElements = useRenderedNavigationItems(navigationItems, renderItem, renderSection, location);
 
     return (
         <>
-            <Nav backgroundColor="neutral-strong" paddingX="inset-lg">
+            <Nav backgroundColor="neutral-strong" paddingX="inset-lg" style={{ minHeight: "48px" }}>
                 {navigationElements}
             </Nav>
             <Main>

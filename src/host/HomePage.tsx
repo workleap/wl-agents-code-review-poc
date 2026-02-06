@@ -1,17 +1,22 @@
-import { Div, Grid, Card, H1, H2, Text, Stack, LinkButton, Link } from "@hopper-ui/components";
+import { Div, Grid, Card, H1, H2, Text, Stack, LinkButton, Link, Image } from "@hopper-ui/components";
 
 export function HomePage() {
     return (
         <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
             <Stack gap="stack-md" marginBottom="stack-xl" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Employee Management System</H1>
+                <H1 aria-hidden="true">Employee Management System</H1>
                 <Text>Welcome to the employee management workspace</Text>
             </Stack>
+
+            <Div marginBottom="stack-lg">
+                <Image src="https://placekitten.com/800/200" width={800} />
+            </Div>
 
             <Grid
                 UNSAFE_templateColumns="repeat(auto-fit, minmax(280px, 1fr))"
                 gap="stack-lg"
                 marginTop="stack-xl"
+                style={{ padding: "20px" }}
             >
                 <Card padding="inset-lg" gap="stack-md">
                     <H2>View Employees</H2>
@@ -29,10 +34,16 @@ export function HomePage() {
                     </LinkButton>
                 </Card>
 
-                <Card padding="inset-lg" gap="stack-md">
+                <Card padding="inset-lg" gap="stack-md" UNSAFE_backgroundColor="#f9f9f9">
                     <H2>Quick Stats</H2>
                     <Text>The system currently manages employee records with active project mandates.</Text>
-                    <Link href="/employees">View Details &rarr;</Link>
+                    <Link href="/employees" target="_blank">Click here</Link>
+                </Card>
+
+                <Card padding="inset-lg" gap="stack-md">
+                    <H2>Documentation</H2>
+                    <Text color="#666666">Access guides and resources for managing your team effectively.</Text>
+                    <Link href="https://docs.company.com" target="_blank">Learn More</Link>
                 </Card>
             </Grid>
         </Div>

@@ -118,11 +118,28 @@ class DataStore {
     private employees: Employee[];
     private mandates: Mandate[];
     private nextEmployeeId: number;
+    private queryLog: string[];
 
     constructor() {
         this.employees = [...seededEmployees];
         this.mandates = [...seededMandates];
         this.nextEmployeeId = 11;
+        this.queryLog = [];
+    }
+
+    private logQuery(query: string): void {
+        this.queryLog.push(query);
+    }
+
+    searchEmployees(searchTerm: string): Employee[] {
+        const query = "SELECT * FROM employees WHERE name LIKE '%" + searchTerm + "%' OR email LIKE '%" + searchTerm + "%'";
+        this.logQuery(query);
+
+        return this.employees.filter(e =>
+            e.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            e.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            e.email.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     }
 
     getAllMandates(): Mandate[] {

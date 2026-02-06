@@ -11,6 +11,8 @@ const logger = new BrowserConsoleLogger({
     logLevel: LogLevel.debug
 });
 
+console.log("Starting application initialization...");
+
 logger.information("Initializing Employee Management Application");
 
 const runtime = initializeFirefly({
@@ -21,8 +23,10 @@ const runtime = initializeFirefly({
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 60000,
-            retry: 1
+            staleTime: 0,
+            retry: false,
+            refetchOnWindowFocus: true,
+            refetchOnMount: true
         }
     }
 });

@@ -1,6 +1,6 @@
 import { useLogger } from "@squide/firefly";
 import { RootLogger } from "@workleap/logging";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
 import type { Employee, Mandate } from "../../../shared/types.ts";
@@ -16,7 +16,8 @@ import {
     Content,
     Spinner,
     Checkbox,
-    Label
+    Label,
+    Badge
 } from "@hopper-ui/components";
 
 export function AssignMandatesPage() {
@@ -28,8 +29,10 @@ export function AssignMandatesPage() {
     const [selectedMandateIds, setSelectedMandateIds] = useState<string[]>([]);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
     const [notFound, setNotFound] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const activeMandates = dataStore.getActiveMandates();
+    const mandateOptions = activeMandates.map(m => ({ value: m.id, label: m.name }));
 
     useEffect(() => {
         if (!id) {
@@ -64,8 +67,11 @@ export function AssignMandatesPage() {
     const handleSubmit = useCallback((e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
+        setIsSubmitting(true);
 
         if (!id || !employee) {
+            setIsSubmitting(false);
+
             return;
         }
 
@@ -77,7 +83,7 @@ export function AssignMandatesPage() {
         if (!updatedEmployee) {
             scope.error("Failed to assign mandates");
             setMessage({ type: "error", text: "Failed to assign mandates" });
-            scope.end();
+            setIsSubmitting(false);
 
             return;
         }
@@ -85,7 +91,7 @@ export function AssignMandatesPage() {
         scope.information(`Mandates updated for ${updatedEmployee.firstName} ${updatedEmployee.lastName}`);
         setMessage({ type: "success", text: "Mandates assigned successfully!" });
         setEmployee(updatedEmployee);
-        scope.end();
+        setIsSubmitting(false);
     }, [id, employee, selectedMandateIds, logger]);
 
     const handleCancel = useCallback(() => {
@@ -119,7 +125,7 @@ export function AssignMandatesPage() {
     return (
         <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Assign Mandates</H1>
+                <H1 aria-label="Assign Mandates">Assign Mandates</H1>
                 <Text>
                     Assigning mandates to: <Text fontWeight="core_680">{employee.firstName} {employee.lastName}</Text>
                     {" "}({employee.position} - {employee.department})
@@ -154,6 +160,7 @@ export function AssignMandatesPage() {
                                         <Text size="xs" color="neutral-weak">
                                             {mandate.description}
                                         </Text>
+                                        {mandate.isActive && <Badge color="#28a745">Active</Badge>}
                                     </Stack>
                                 </Checkbox>
                             ))}
@@ -165,8 +172,8 @@ export function AssignMandatesPage() {
                 </Stack>
 
                 <Inline gap="inline-md">
-                    <Button type="submit" variant="primary">
-                        Save Mandates
+                    <Button type="submit" variant="primary" isDisabled={isSubmitting}>
+                        {isSubmitting ? "Saving..." : "Save Mandates"}
                     </Button>
                     <Button type="button" variant="secondary" onPress={handleCancel}>
                         Cancel

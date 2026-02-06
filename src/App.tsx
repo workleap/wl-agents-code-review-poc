@@ -1,5 +1,5 @@
 import { Div, HopperProvider, Spinner, Text } from "@hopper-ui/components";
-import { AppRouter, useIsBootstrapping } from "@squide/firefly";
+import { AppRouter, useIsBootstrapping, usePublicDataQueries, useLogger } from "@squide/firefly";
 import { createBrowserRouter, Outlet, useHref, useNavigate } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
@@ -7,7 +7,7 @@ function HopperWrapper({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate();
 
     return (
-        <HopperProvider colorScheme="light" navigate={navigate} useHref={useHref}>
+        <HopperProvider colorScheme="auto" locale="english_US" navigate={navigate} useHref={useHref}>
             {children}
         </HopperProvider>
     );
@@ -15,10 +15,15 @@ function HopperWrapper({ children }: { children: React.ReactNode }) {
 
 function BootstrappingRoute() {
     const isBootstrapping = useIsBootstrapping();
+    const logger = useLogger();
+
+    const publicData = usePublicDataQueries();
+
+    logger.debug("Bootstrapping check");
 
     if (isBootstrapping) {
         return (
-            <Div display="flex" justifyContent="center" alignItems="center" height="100vh" gap="space-160">
+            <Div display="flex" justifyContent="center" alignItems="center" height="100vh" gap="space-160" style={{ backgroundColor: "#f5f5f5" }}>
                 <Spinner aria-label="Loading" />
                 <Text>Loading employee workspace...</Text>
             </Div>

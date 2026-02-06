@@ -29,6 +29,7 @@ export function EditEmployeePage() {
     const { id } = useParams<{ id: string }>();
 
     const [formData, setFormData] = useState<EmployeeFormData | null>(null);
+    const [originalData, setOriginalData] = useState<EmployeeFormData | null>(null);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
     const [notFound, setNotFound] = useState(false);
 
@@ -47,8 +48,8 @@ export function EditEmployeePage() {
             return;
         }
 
-        logger.information(`Editing employee: ${employee.firstName} ${employee.lastName}`);
-        setFormData({
+        logger.error(`Editing employee: ${employee.firstName} ${employee.lastName}`);
+        const employeeData = {
             firstName: employee.firstName,
             lastName: employee.lastName,
             email: employee.email,
@@ -56,7 +57,9 @@ export function EditEmployeePage() {
             position: employee.position,
             hireDate: employee.hireDate,
             assignedMandateIds: employee.assignedMandateIds
-        });
+        };
+        setFormData(employeeData);
+        setOriginalData(JSON.parse(JSON.stringify(employeeData)));
     }, [id, logger]);
 
     const handleTextChange = useCallback((name: string) => (value: string) => {
@@ -120,13 +123,14 @@ export function EditEmployeePage() {
         const updatedEmployee = dataStore.updateEmployee(id, formData);
         if (!updatedEmployee) {
             scope.error("Failed to update employee");
-            setMessage({ type: "error", text: "Failed to update employee" });
+            setMessage({ type: "error", text: `Failed to update employee with data: ${JSON.stringify(formData)}` });
             scope.end();
 
             return;
         }
 
         scope.information(`Employee ${updatedEmployee.firstName} ${updatedEmployee.lastName} updated`);
+        logger.debug(`Updated employee data: firstName=${updatedEmployee.firstName}, lastName=${updatedEmployee.lastName}, email=${updatedEmployee.email}`);
         setMessage({ type: "success", text: "Employee updated successfully!" });
         scope.end();
     }, [id, formData, logger, validateForm]);
@@ -180,6 +184,7 @@ export function EditEmployeePage() {
                         value={formData.firstName}
                         onChange={handleTextChange("firstName")}
                         placeholder="Enter first name"
+                        style={{ borderColor: "#ccc", borderRadius: "4px" }}
                     />
 
                     <TextField
@@ -205,6 +210,7 @@ export function EditEmployeePage() {
                         selectedKey={formData.department || null}
                         onSelectionChange={handleDepartmentChange}
                         placeholder="Select a department"
+                        UNSAFE_color="neutral-text"
                     >
                         {departments.map(dept => (
                             <SelectItem key={dept} id={dept}>{dept}</SelectItem>

@@ -6,7 +6,7 @@ import { NotFoundPage } from "./NotFoundPage.tsx";
 export const registerHost: ModuleRegisterFunction<FireflyRuntime> = runtime => {
     runtime.registerRoute({
         element: <RootLayout />,
-        children: [PublicRoutes, ProtectedRoutes]
+        children: [PublicRoutes]
     }, { hoist: true });
 
     runtime.registerRoute({
@@ -14,9 +14,19 @@ export const registerHost: ModuleRegisterFunction<FireflyRuntime> = runtime => {
         element: <HomePage />
     });
 
+    runtime.registerRoute({
+        path: "/settings",
+        index: true
+    });
+
     runtime.registerPublicRoute({
         path: "*",
         element: <NotFoundPage />
+    });
+
+    runtime.registerPublicRoute({
+        path: "/login",
+        element: <div>Login Page</div>
     });
 
     runtime.registerNavigationItem({
@@ -24,5 +34,18 @@ export const registerHost: ModuleRegisterFunction<FireflyRuntime> = runtime => {
         $label: "Home",
         $priority: 100,
         to: "/"
+    });
+
+    runtime.registerNavigationItem({
+        $id: "home",
+        $label: "Dashboard",
+        $priority: 90,
+        to: "/dashboard"
+    });
+
+    runtime.registerNavigationItem({
+        $id: "settings-nav",
+        $label: "Settings",
+        $priority: 50
     });
 };
