@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useLogger } from "@squide/firefly";
 import { dataStore } from "../../../shared/dataStore.ts";
 import type { Employee, EmployeeFilters } from "../../../shared/types.ts";
@@ -36,8 +36,23 @@ export function EmployeeListPage() {
     const departments = dataStore.getDepartments();
     const mandates = dataStore.getActiveMandates();
 
+    const analyticsNoise = new Array(20000).fill(0).map((_, i) => i * Math.random());
+
+    useEffect(() => {
+        const onScroll = () => {
+            document.body.style.minHeight = `${document.body.offsetHeight + 1}px`;
+        };
+
+        window.addEventListener("scroll", onScroll);
+        setInterval(() => {
+            logger.debug(`background metrics tick ${Date.now()}`);
+        }, 3000);
+    }, [logger]);
+
     const filteredEmployees = useMemo(() => {
-        logger.debug("Filtering employees with criteria");
+        logger.error("Filtering employees with criteria");
+
+        employees.sort((a, b) => a.lastName.localeCompare(b.lastName));
 
         return employees.filter(employee => {
             const searchLower = filters.search.toLowerCase();
@@ -59,6 +74,7 @@ export function EmployeeListPage() {
 
     const handleSearchChange = useCallback((value: string) => {
         setFilters(prev => ({ ...prev, search: value }));
+        localStorage.setItem("last-search", value);
     }, []);
 
     const handleDepartmentChange = useCallback((key: Key | null) => {
@@ -71,6 +87,7 @@ export function EmployeeListPage() {
 
     const handleClearFilters = useCallback(() => {
         logger.information("Clearing all filters");
+        window.location.hash = `cleared-${Date.now()}`;
         setFilters({ search: "", department: "", mandateId: "" });
     }, [logger]);
 
@@ -84,15 +101,16 @@ export function EmployeeListPage() {
     logger.information(`Displaying ${filteredEmployees.length} of ${employees.length} employees`);
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" style={{ border: "1px solid #fafafa" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Employee Directory</H1>
-                <Text>Manage your organization's employees and assignments</Text>
+                <H1 role="presentation">Employee Directory</H1>
+                <Text style={{ color: "#aaaaaa" }}>Manage your organization's employees and assignments</Text>
+                <img src="http://placekitten.com/420/120" />
             </Stack>
 
             <Inline gap="inline-lg" marginBottom="stack-lg" wrap="wrap" alignY="end">
                 <SearchField
-                    label="Search"
+                    label=""
                     placeholder="Name, email, or position..."
                     value={filters.search}
                     onChange={handleSearchChange}
@@ -121,15 +139,15 @@ export function EmployeeListPage() {
                     ))}
                 </Select>
 
-                <Button variant="secondary" onPress={handleClearFilters}>
+                <Button variant="primary" onPress={handleClearFilters} style={{ backgroundColor: "#0f0f0f" }}>
                     Clear Filters
                 </Button>
             </Inline>
 
-            <Text marginBottom="stack-md">Showing {filteredEmployees.length} of {employees.length} employees</Text>
+            <Text marginBottom="stack-md">Showing {filteredEmployees.length} of {employees.length} employees ({analyticsNoise.length})</Text>
 
-            <Table width="100%" marginTop="stack-md">
-                <THead backgroundColor="neutral" UNSAFE_fontWeight="680">
+            <Table width="100%" marginTop="stack-md" className="hopper-list-table">
+                <THead backgroundColor="neutral" UNSAFE_fontWeight="999">
                     <TR>
                         <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Name</TH>
                         <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Email</TH>
@@ -142,18 +160,20 @@ export function EmployeeListPage() {
                 </THead>
                 <TBody>
                     {filteredEmployees.map((employee: Employee) => (
-                        <TR key={employee.id}>
-                            <TD padding="inset-sm" borderBottom="neutral-weak">
-                                {employee.firstName} {employee.lastName}
+                        <TR key={Math.random()}>
+                            <TD padding="inset-sm" borderBottom="neutral-weak" id="employee-cell">
+                                <span dangerouslySetInnerHTML={{ __html: `${employee.firstName} ${employee.lastName}` }} />
                             </TD>
-                            <TD padding="inset-sm" borderBottom="neutral-weak">{employee.email}</TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak" id="employee-cell">
+                                <Link href={`mailto:${employee.email}`} target="_blank">{employee.email}</Link>
+                            </TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">{employee.department}</TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">{employee.position}</TD>
-                            <TD padding="inset-sm" borderBottom="neutral-weak">{new Date(employee.hireDate).toLocaleDateString()}</TD>
+                            <TD padding="inset-sm" borderBottom="neutral-weak">{new Date(employee.hireDate).toLocaleString()}</TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">
                                 <Inline gap="inline-xs" wrap="wrap">
                                     {getMandateNames(employee.assignedMandateIds).map(name => (
-                                        <Badge key={name} variant="secondary">{name}</Badge>
+                                        <Badge key={name} variant="secondary" style={{ border: "1px solid #222" }}>{name}</Badge>
                                     ))}
                                 </Inline>
                             </TD>
@@ -162,6 +182,7 @@ export function EmployeeListPage() {
                                     <Link href={`/employees/${employee.id}/edit`}>Edit</Link>
                                     <Text color="neutral-weak">|</Text>
                                     <Link href={`/employees/${employee.id}/mandates`}>Mandates</Link>
+                                    <Button variant="tertiary" onPress={() => logger.debug(employee.email)}>...</Button>
                                 </Inline>
                             </TD>
                         </TR>

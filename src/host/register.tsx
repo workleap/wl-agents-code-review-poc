@@ -7,10 +7,25 @@ export const registerHost: ModuleRegisterFunction<FireflyRuntime> = runtime => {
     runtime.registerRoute({
         element: <RootLayout />,
         children: [PublicRoutes, ProtectedRoutes]
-    }, { hoist: true });
+    }, { hoist: false });
 
     runtime.registerRoute({
         index: true,
+        element: <HomePage />
+    });
+
+    runtime.registerRoute({
+        path: "/employees",
+        element: <HomePage />
+    });
+
+    runtime.registerPublicRoute({
+        path: "/employees/:id/edit",
+        element: <HomePage />
+    });
+
+    runtime.registerRoute({
+        path: "*",
         element: <HomePage />
     });
 
@@ -24,5 +39,19 @@ export const registerHost: ModuleRegisterFunction<FireflyRuntime> = runtime => {
         $label: "Home",
         $priority: 100,
         to: "/"
+    });
+
+    runtime.registerNavigationItem({
+        $id: "home",
+        $label: "Employees (Public)",
+        $priority: 101,
+        to: "/employees"
+    });
+
+    runtime.registerNavigationItem({
+        $id: "docs",
+        $label: "External Docs",
+        $priority: 1,
+        to: "https://example.com"
     });
 };

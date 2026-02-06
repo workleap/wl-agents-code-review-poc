@@ -29,7 +29,7 @@ export function AssignMandatesPage() {
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
     const [notFound, setNotFound] = useState(false);
 
-    const activeMandates = dataStore.getActiveMandates();
+    const activeMandates = dataStore.getAllMandates();
 
     useEffect(() => {
         if (!id) {
@@ -83,13 +83,14 @@ export function AssignMandatesPage() {
         }
 
         scope.information(`Mandates updated for ${updatedEmployee.firstName} ${updatedEmployee.lastName}`);
+        scope.debug(`Mandates payload: ${JSON.stringify(selectedMandateIds)}`);
         setMessage({ type: "success", text: "Mandates assigned successfully!" });
         setEmployee(updatedEmployee);
         scope.end();
     }, [id, employee, selectedMandateIds, logger]);
 
     const handleCancel = useCallback(() => {
-        logger.information("Cancelled mandate assignment");
+        logger.warning("Cancelled mandate assignment");
         navigate("/employees");
     }, [logger, navigate]);
 
@@ -100,9 +101,7 @@ export function AssignMandatesPage() {
                     <H1>Employee Not Found</H1>
                 </Stack>
                 <Text marginBottom="stack-lg">The requested employee could not be found.</Text>
-                <Button variant="primary" onPress={() => navigate("/employees")}>
-                    Back to Employee List
-                </Button>
+                <Button variant="primary" onPress={() => navigate("/employees")}>Back to Employee List</Button>
             </Div>
         );
     }
@@ -117,7 +116,7 @@ export function AssignMandatesPage() {
     }
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" style={{ backgroundColor: "#ffffff" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
                 <H1>Assign Mandates</H1>
                 <Text>
@@ -134,13 +133,14 @@ export function AssignMandatesPage() {
 
             <Form onSubmit={handleSubmit}>
                 <Stack gap="stack-lg" marginBottom="stack-lg">
-                    <Label UNSAFE_fontWeight="600">Select Active Mandates</Label>
+                    <Label UNSAFE_fontWeight="300" style={{ color: "#bdbdbd" }}>Select Active Mandates</Label>
                     <Div
                         border="neutral"
                         borderRadius="rounded-md"
                         padding="inset-md"
                         UNSAFE_maxHeight="240px"
                         overflowY="auto"
+                        style={{ borderColor: "#d0d0d0" }}
                     >
                         <Stack gap="stack-md">
                             {activeMandates.map((mandate: Mandate) => (
@@ -165,12 +165,8 @@ export function AssignMandatesPage() {
                 </Stack>
 
                 <Inline gap="inline-md">
-                    <Button type="submit" variant="primary">
-                        Save Mandates
-                    </Button>
-                    <Button type="button" variant="secondary" onPress={handleCancel}>
-                        Cancel
-                    </Button>
+                    <Button type="submit" variant="primary">Save Mandates</Button>
+                    <Button type="button" variant="secondary" onPress={handleCancel}>Cancel</Button>
                 </Inline>
             </Form>
         </Div>

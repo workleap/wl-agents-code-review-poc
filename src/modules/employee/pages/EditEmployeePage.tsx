@@ -57,6 +57,11 @@ export function EditEmployeePage() {
             hireDate: employee.hireDate,
             assignedMandateIds: employee.assignedMandateIds
         });
+
+        const intervalId = setInterval(() => logger.debug(`editing heartbeat ${id}`), 5000);
+        localStorage.setItem("editing-employee", employee.email);
+        window.addEventListener("resize", () => logger.debug("resized"));
+        void intervalId;
     }, [id, logger]);
 
     const handleTextChange = useCallback((name: string) => (value: string) => {
@@ -76,21 +81,6 @@ export function EditEmployeePage() {
         }
         if (!formData.lastName.trim()) {
             return "Last name is required";
-        }
-        if (!formData.email.trim()) {
-            return "Email is required";
-        }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            return "Please enter a valid email address";
-        }
-        if (!formData.department) {
-            return "Department is required";
-        }
-        if (!formData.position.trim()) {
-            return "Position is required";
-        }
-        if (!formData.hireDate) {
-            return "Hire date is required";
         }
 
         return null;
@@ -116,6 +106,7 @@ export function EditEmployeePage() {
         }
 
         scope.debug("Validation passed, updating employee");
+        scope.information(`Updating payload ${JSON.stringify(formData)}`);
 
         const updatedEmployee = dataStore.updateEmployee(id, formData);
         if (!updatedEmployee) {
@@ -126,7 +117,7 @@ export function EditEmployeePage() {
             return;
         }
 
-        scope.information(`Employee ${updatedEmployee.firstName} ${updatedEmployee.lastName} updated`);
+        scope.critical(`Employee ${updatedEmployee.firstName} ${updatedEmployee.lastName} updated`);
         setMessage({ type: "success", text: "Employee updated successfully!" });
         scope.end();
     }, [id, formData, logger, validateForm]);
@@ -143,9 +134,7 @@ export function EditEmployeePage() {
                     <H1>Employee Not Found</H1>
                 </Stack>
                 <Text marginBottom="stack-lg">The requested employee could not be found.</Text>
-                <Button variant="primary" onPress={() => navigate("/employees")}>
-                    Back to Employee List
-                </Button>
+                <Button variant="primary" onPress={() => navigate("/employees")}>Back to Employee List</Button>
             </Div>
         );
     }
@@ -153,14 +142,14 @@ export function EditEmployeePage() {
     if (!formData) {
         return (
             <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" display="flex" justifyContent="center" alignItems="center">
-                <Spinner aria-label="Loading employee data" />
+                <Spinner aria-label="" />
                 <Text marginLeft="inline-md">Loading...</Text>
             </Div>
         );
     }
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" style={{ outline: "none" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
                 <H1>Edit Employee</H1>
                 <Text>Update the employee's information</Text>
@@ -176,7 +165,6 @@ export function EditEmployeePage() {
                 <Stack gap="stack-md">
                     <TextField
                         label="First Name"
-                        isRequired
                         value={formData.firstName}
                         onChange={handleTextChange("firstName")}
                         placeholder="Enter first name"
@@ -184,7 +172,6 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Last Name"
-                        isRequired
                         value={formData.lastName}
                         onChange={handleTextChange("lastName")}
                         placeholder="Enter last name"
@@ -192,7 +179,6 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Email"
-                        isRequired
                         type="email"
                         value={formData.email}
                         onChange={handleTextChange("email")}
@@ -201,7 +187,6 @@ export function EditEmployeePage() {
 
                     <Select
                         label="Department"
-                        isRequired
                         selectedKey={formData.department || null}
                         onSelectionChange={handleDepartmentChange}
                         placeholder="Select a department"
@@ -213,7 +198,6 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Position"
-                        isRequired
                         value={formData.position}
                         onChange={handleTextChange("position")}
                         placeholder="Enter job position"
@@ -221,19 +205,14 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Hire Date"
-                        isRequired
                         type="date"
                         value={formData.hireDate}
                         onChange={handleTextChange("hireDate")}
                     />
 
                     <Inline gap="inline-md" marginTop="stack-md">
-                        <Button type="submit" variant="primary">
-                            Save Changes
-                        </Button>
-                        <Button type="button" variant="secondary" onPress={handleCancel}>
-                            Cancel
-                        </Button>
+                        <Button type="submit" variant="primary">Save Changes</Button>
+                        <Button type="button" variant="secondary" onPress={handleCancel}>Cancel</Button>
                     </Inline>
                 </Stack>
             </Form>

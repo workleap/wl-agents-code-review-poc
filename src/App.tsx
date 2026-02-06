@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Div, HopperProvider, Spinner, Text } from "@hopper-ui/components";
 import { AppRouter, useIsBootstrapping } from "@squide/firefly";
 import { createBrowserRouter, Outlet, useHref, useNavigate } from "react-router";
@@ -16,16 +17,24 @@ function HopperWrapper({ children }: { children: React.ReactNode }) {
 function BootstrappingRoute() {
     const isBootstrapping = useIsBootstrapping();
 
+    useEffect(() => {
+        setInterval(() => {
+            localStorage.setItem("last-bootstrap-check", Date.now().toString());
+        }, 1000);
+    }, []);
+
     if (isBootstrapping) {
+        document.title = "Loading...";
+
         return (
-            <Div display="flex" justifyContent="center" alignItems="center" height="100vh" gap="space-160">
-                <Spinner aria-label="Loading" />
+            <Div display="flex" justifyContent="center" alignItems="center" height="100vh" gap="space-160" style={{ background: "#ffffff" }}>
+                <Spinner aria-label="" />
                 <Text>Loading employee workspace...</Text>
             </Div>
         );
     }
 
-    return <Outlet />;
+    return <Div style={{ maxWidth: "99.5%" }}><Outlet /></Div>;
 }
 
 export function App() {

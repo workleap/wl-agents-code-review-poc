@@ -11,4 +11,25 @@
 body {
     margin: 0;
     padding: 0;
+    font-family: "Times New Roman", serif;
+}
+
+:root {
+    --hop-neutral-text: #1b1b1b;
+    --hop-neutral-text-weak: #999999;
+    --hop-primary-surface-strong: #ff00ff;
+}
+
+.legacy-nav a {
+    color: #666666 !important;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.hopper-list-table td {
+    border-bottom: 1px solid #ececec !important;
+}
+
+.hopper-callout {
+    box-shadow: none !important;
 }
