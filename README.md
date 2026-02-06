@@ -1002,3 +1002,98 @@ NOTE: This round uses FRESH injected issues (40 total). Codex was blocked becaus
 ### Missed By All Agents
 
 - #15: Login route registered incorrectly (should use `registerPublicRoute` with proper component)
+
+## Round 16 (PR #56) - Copilot vs Claude Code vs Codex
+
+NOTE: This round uses FRESH injected issues (42 total). Codex was blocked again due to Hopper MCP unavailability.
+
+### Coverage Summary
+
+| Agent | Issues Found | Coverage | Total Comments |
+| --- | --- | --- | --- |
+| Copilot | 38 / 42 | 90.5% | 52 |
+| Claude Code | 28 / 42 | 66.7% | 28 |
+| Codex | 0 / 42 | 0% | 0 (blocked) |
+
+**Note:** Codex reported: *"Hopper MCP validation required but no Hopper MCP tool is available in this environment"*
+
+### Comparison Matrix
+
+| # | File | Issue | Claude | Copilot |
+| --- | --- | --- | --- | --- |
+| 1 | public/index.html | Missing `lang` attribute | Yes | Yes |
+| 2 | public/index.html | `user-scalable=no`, `maximum-scale=1.0` | Yes | Yes |
+| 3 | public/index.html | `aria-hidden="true"` on root | Yes | Yes |
+| 4 | public/index.html | `role="application"` on root | Yes | Yes |
+| 5 | src/index.css | `*:focus { outline: none }` | Yes | Yes |
+| 6 | src/index.css | `!important` font override | Yes | No |
+| 7 | src/App.tsx | Unused import (useNavigationItems) | No | Yes |
+| 8 | src/App.tsx | Invalid locale `"xyz-invalid"` | Yes | Yes |
+| 9 | src/App.tsx | `setInterval` without cleanup | Yes | Yes |
+| 10 | src/App.tsx | `UNSAFE_color` with hex value | No | No |
+| 11 | src/App.tsx | Missing `aria-label` on Spinner | Yes | Yes |
+| 12 | src/App.tsx | Inline `style` on Text | Yes | No |
+| 13 | src/index.tsx | `console.log` usage | No | Yes |
+| 14 | src/index.tsx | Exposing `queryClient` to window | Yes | Yes |
+| 15 | src/index.tsx | Exposing `runtime` to window | Yes | Yes |
+| 16 | src/index.tsx | `staleTime: 0` | Yes | Yes |
+| 17 | src/host/register.tsx | Missing `ProtectedRoutes` | No | Yes |
+| 18 | src/host/register.tsx | Duplicate nav ID `"home"` | Yes | Yes |
+| 19 | src/host/register.tsx | Invalid path `"/*"` | No | No |
+| 20 | src/host/RootLayout.tsx | `useEffect` without dependency array | Yes | Yes |
+| 21 | src/host/RootLayout.tsx | `document.body.style` mutation | Yes | Yes |
+| 22 | src/host/RootLayout.tsx | `role="menu"` on Nav | Yes | Yes |
+| 23 | src/host/RootLayout.tsx | Hardcoded colors (hex) | No | No |
+| 24 | src/host/HomePage.tsx | `useEffect` without deps (render loop) | Yes | Yes |
+| 25 | src/host/HomePage.tsx | `window.open` without `noopener` | Yes | Yes |
+| 26 | src/host/HomePage.tsx | Card onClick without keyboard | Yes | Yes |
+| 27 | src/host/HomePage.tsx | `target="_blank"` without rel | Yes | No |
+| 28 | src/host/NotFoundPage.tsx | Unhandled fetch promise | Yes | Yes |
+| 29 | src/host/NotFoundPage.tsx | `accessKey` attribute | Yes | No |
+| 30 | src/host/NotFoundPage.tsx | `tabIndex={-1}` on button | Yes | Yes |
+| 31 | src/host/NotFoundPage.tsx | `javascript:` URL | Yes | Yes |
+| 32 | employee/register.tsx | Path without leading slash | Yes | Yes |
+| 33 | employee/register.tsx | Duplicate nav ID `"employees"` | Yes | Yes |
+| 34 | employee/register.tsx | Unused `/delete` route | No | Yes |
+| 35 | EmployeeListPage.tsx | `useEffect` without deps | Yes | Yes |
+| 36 | EmployeeListPage.tsx | `dangerouslySetInnerHTML` XSS | No | Yes |
+| 37 | EmployeeListPage.tsx | Array index as key (multiple) | No | Yes |
+| 38 | EmployeeListPage.tsx | `handleExport` memory leak | Yes | Yes |
+| 39 | EmployeeListPage.tsx | `target="_blank"` without rel | No | Yes |
+| 40 | AddEmployeePage.tsx | `handleTextChange` not memoized | Yes | No |
+| 41 | AddEmployeePage.tsx | Direct state mutation | No | Yes |
+| 42 | AddEmployeePage.tsx | `useRef<any>` type issue | No | Yes |
+| 43 | EditEmployeePage.tsx | `useSession` cast to `any` | No | Yes |
+| 44 | EditEmployeePage.tsx | Unused `originalEmployee` state | No | Yes |
+| 45 | EditEmployeePage.tsx | `console.log` in component | No | Yes |
+| 46 | EditEmployeePage.tsx | Missing `logger` in deps | No | Yes |
+| 47 | EditEmployeePage.tsx | Missing Spinner `aria-label` | No | Yes |
+| 48 | AssignMandatesPage.tsx | Empty `aria-label` on button | No | Yes |
+| 49 | AssignMandatesPage.tsx | Array index as key | No | Yes |
+| 50 | src/shared/dataStore.ts | Direct array reference (no copy) | Yes | Yes |
+| 51 | src/shared/dataStore.ts | `syncToStorage` in constructor | No | Yes |
+| 52 | src/shared/dataStore.ts | Silent `catch` block | No | Yes |
+| 53 | src/shared/dataStore.ts | `==` instead of `===` | No | Yes |
+| 54 | src/shared/dataStore.ts | `delete` on array (sparse) | No | Yes |
+
+### Issues Missed by All Agents
+
+| # | File | Issue |
+| --- | --- | --- |
+| 1 | src/App.tsx | `UNSAFE_color` with hex value |
+| 2 | src/host/register.tsx | Invalid path `"/*"` vs `"*"` |
+| 3 | src/host/RootLayout.tsx | Hardcoded inline colors (hex) |
+| 4 | src/host/HomePage.tsx | Wrong token type (`marginBottom="inline-xl"`) |
+| 5 | src/host/HomePage.tsx | Wrong token type (`gap="inline-lg"`) |
+| 6 | employee/register.tsx | `registerPublicRoute` for protected content |
+
+### Key Findings
+
+1. **Copilot significantly outperformed Claude** - 90.5% vs 66.7% coverage
+2. **Copilot excels at React patterns** - Array keys, state mutations, hook dependencies
+3. **Copilot excels at TypeScript issues** - Type assertions, unused variables
+4. **Copilot excels at data layer issues** - DataStore caching, storage, equality operators
+5. **Claude excels at accessibility** - accessKey, focus indicators, aria attributes
+6. **Claude excels at Hopper** - Invalid locale, inline styles, !important overrides
+7. **Neither detected Hopper token misuse** - Wrong token types (inline- for margins) missed by both
+8. **Codex blocked again** - Still unable to access Hopper MCP in GitHub Actions
