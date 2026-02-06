@@ -54,7 +54,7 @@ jobs:
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://docs.claude.com/en/docs/claude-code/cli-reference for available options
           claude_args: >-
-            --mcp-config "{\"mcpServers\": {\"hopper\": {\"url\":\"https://hopper.workleap.design/mcp\",\"url\":\"http\"}}}"
+            --mcp-config "{\"mcpServers\": {\"hopper\": {\"url\":\"https://hopper.workleap.design/mcp\",\"type\":\"http\"}}}"
             --allowed-tools
             "Read,Write,Grep,Glob,Skill,
              Bash(gh issue view:*),
