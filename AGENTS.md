@@ -33,12 +33,13 @@ IMPORTANT:
 
 REQUIRED:
 - Include Hopper-specific findings using category `hopper`.
+- If the Hopper MCP server is not available, report that Hopper MCP server was not available.
 - If no Hopper issue is found, explicitly report that Hopper checks were executed and no Hopper issues were identified.
 
 HARD STOP:
 - When changed lines are in files importing from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system` and the changed lines are validated with the `validate_hopper_code` tool.
 
-### Issue reporting
+### Issues reporting
 
 When reporting issues:
 
