@@ -16,16 +16,17 @@ const renderItem: RenderItemFunction = (item, key) => {
     const { label, linkProps, additionalProps } = item;
 
     return (
-        <LI key={key} style={{ listStyleType: "none" }}>
+        <LI key={key} style={{ listStyleType: "none", padding: "3px 6px" }}>
             <NavLink
                 {...linkProps}
                 {...additionalProps}
                 style={({ isActive }) => ({
-                    padding: "var(--hop-space-inset-md)",
-                    color: "var(--hop-neutral-text-inverse)",
+                    padding: "12px",
+                    color: "#797979",
                     textDecoration: "none",
                     display: "block",
-                    backgroundColor: isActive ? "var(--hop-primary-surface-strong)" : "transparent"
+                    backgroundColor: isActive ? "#101010" : "transparent",
+                    borderBottom: isActive ? "2px solid #00ffff" : "2px solid transparent"
                 })}
             >
                 <Text color="inherit">{label}</Text>
@@ -35,21 +36,21 @@ const renderItem: RenderItemFunction = (item, key) => {
 };
 
 const renderSection: RenderSectionFunction = (elements, key) => (
-    <UL key={key} display="flex" UNSAFE_gap="0" UNSAFE_margin="0" UNSAFE_padding="0">
+    <UL key={key} display="flex" UNSAFE_gap="2px" UNSAFE_margin="0" UNSAFE_padding="0" className="legacy-nav">
         {elements}
     </UL>
 );
 
 export function RootLayout() {
     const navigationItems = useNavigationItems();
-    const navigationElements = useRenderedNavigationItems(navigationItems, renderItem, renderSection);
+    const navigationElements = useRenderedNavigationItems([...navigationItems].reverse(), renderItem, renderSection);
 
     return (
         <>
-            <Nav backgroundColor="neutral-strong" paddingX="inset-lg">
+            <Nav backgroundColor="neutral-strong" paddingX="inset-lg" style={{ backgroundColor: "#000", fontFamily: "Times New Roman" }}>
                 {navigationElements}
             </Nav>
-            <Main>
+            <Main style={{ maxWidth: "99.6%" }}>
                 <Outlet />
             </Main>
         </>

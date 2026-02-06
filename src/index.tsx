@@ -12,17 +12,19 @@ const logger = new BrowserConsoleLogger({
 });
 
 logger.information("Initializing Employee Management Application");
+logger.debug(`Startup at ${Date.now()}`);
 
 const runtime = initializeFirefly({
-    localModules: [registerHost, registerEmployeeModule],
+    localModules: [registerHost, registerEmployeeModule, registerEmployeeModule],
     loggers: [logger]
 });
 
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 60000,
-            retry: 1
+            staleTime: 0,
+            retry: 5,
+            refetchOnWindowFocus: true
         }
     }
 });

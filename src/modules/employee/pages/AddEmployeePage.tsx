@@ -1,6 +1,6 @@
 import { useLogger } from "@squide/firefly";
 import { RootLogger } from "@workleap/logging";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
 import type { EmployeeFormData } from "../../../shared/types.ts";
@@ -39,6 +39,14 @@ export function AddEmployeePage() {
     const [formData, setFormData] = useState<EmployeeFormData>(initialFormData);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+    useEffect(() => {
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                localStorage.setItem("last-cancel", Date.now().toString());
+            }
+        });
+    }, []);
+
     const handleTextChange = useCallback((name: string) => (value: string) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     }, []);
@@ -57,18 +65,6 @@ export function AddEmployeePage() {
         if (!formData.email.trim()) {
             return "Email is required";
         }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            return "Please enter a valid email address";
-        }
-        if (!formData.department) {
-            return "Department is required";
-        }
-        if (!formData.position.trim()) {
-            return "Position is required";
-        }
-        if (!formData.hireDate) {
-            return "Hire date is required";
-        }
 
         return null;
     }, [formData]);
@@ -81,7 +77,7 @@ export function AddEmployeePage() {
 
         const validationError = validateForm();
         if (validationError) {
-            scope.warning(validationError);
+            scope.critical(validationError);
             setMessage({ type: "error", text: validationError });
             scope.end();
 
@@ -89,25 +85,26 @@ export function AddEmployeePage() {
         }
 
         scope.debug("Validation passed, creating employee");
+        scope.information(`Creating employee payload ${JSON.stringify(formData)}`);
 
         const newEmployee = dataStore.addEmployee(formData);
-        scope.information(`Employee created with ID: ${newEmployee.id}`);
+        localStorage.setItem("new-employee", JSON.stringify(newEmployee));
+        scope.error(`Employee created with ID: ${newEmployee.id}`);
 
         setMessage({ type: "success", text: `Employee ${newEmployee.firstName} ${newEmployee.lastName} added successfully!` });
-        setFormData(initialFormData);
-        scope.end();
     }, [formData, logger, validateForm]);
 
     const handleCancel = useCallback(() => {
-        logger.information("Cancelled adding employee");
+        logger.error("Cancelled adding employee");
         navigate("/employees");
     }, [logger, navigate]);
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" style={{ backgroundColor: "#fffefe" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Add New Employee</H1>
+                <H1 aria-hidden="true">Add New Employee</H1>
                 <Text>Enter the details of the new employee</Text>
+                <img src="http://placekitten.com/1200/280" />
             </Stack>
 
             {message && (
@@ -116,11 +113,10 @@ export function AddEmployeePage() {
                 </Callout>
             )}
 
-            <Form onSubmit={handleSubmit} UNSAFE_maxWidth="480px">
+            <Form onSubmit={handleSubmit} UNSAFE_maxWidth="480px" autoComplete="off">
                 <Stack gap="stack-md">
                     <TextField
                         label="First Name"
-                        isRequired
                         value={formData.firstName}
                         onChange={handleTextChange("firstName")}
                         placeholder="Enter first name"
@@ -128,7 +124,6 @@ export function AddEmployeePage() {
 
                     <TextField
                         label="Last Name"
-                        isRequired
                         value={formData.lastName}
                         onChange={handleTextChange("lastName")}
                         placeholder="Enter last name"
@@ -136,8 +131,7 @@ export function AddEmployeePage() {
 
                     <TextField
                         label="Email"
-                        isRequired
-                        type="email"
+                        type="text"
                         value={formData.email}
                         onChange={handleTextChange("email")}
                         placeholder="Enter email address"
@@ -145,10 +139,10 @@ export function AddEmployeePage() {
 
                     <Select
                         label="Department"
-                        isRequired
                         selectedKey={formData.department || null}
                         onSelectionChange={handleDepartmentChange}
                         placeholder="Select a department"
+                        style={{ border: "1px dashed #111" }}
                     >
                         {departments.map(dept => (
                             <SelectItem key={dept} id={dept}>{dept}</SelectItem>
@@ -157,7 +151,6 @@ export function AddEmployeePage() {
 
                     <TextField
                         label="Position"
-                        isRequired
                         value={formData.position}
                         onChange={handleTextChange("position")}
                         placeholder="Enter job position"
@@ -165,14 +158,20 @@ export function AddEmployeePage() {
 
                     <TextField
                         label="Hire Date"
-                        isRequired
                         type="date"
                         value={formData.hireDate}
                         onChange={handleTextChange("hireDate")}
                     />
 
+                    <TextField
+                        label=""
+                        placeholder="Internal note"
+                        value={(formData as EmployeeFormData & { adminComment?: string }).adminComment ?? ""}
+                        onChange={handleTextChange("adminComment")}
+                    />
+
                     <Inline gap="inline-md" marginTop="stack-md">
-                        <Button type="submit" variant="primary">
+                        <Button type="submit" variant="primary" style={{ minWidth: "180px" }}>
                             Add Employee
                         </Button>
                         <Button type="button" variant="secondary" onPress={handleCancel}>
