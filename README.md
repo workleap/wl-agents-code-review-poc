@@ -1,9 +1,10 @@
 ## Conclusion
 
 - All three agents support agent skills for code reviews 🚀
+- All three agrents are struggling to support MCP server 😞
 - My recommendation is to either:
-    - Use Copilot for ease of configuration (up and running in ~30 seconds) and best-in-class reporting.
-    - Use Codex for slightly better efficiency (it finds a bit more issues), faster time to completion, and very low cost (around $0.10 per review).
+    - Use Copilot for ease of configuration (up and running in ~30 seconds), best-in-class reporting and consistent reporting.
+    - Use Claude Code (without the code review plugin) for faster time to completion and early available of new features.
 
 ### Notes
 
