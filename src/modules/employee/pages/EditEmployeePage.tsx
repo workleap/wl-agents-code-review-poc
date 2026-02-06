@@ -59,6 +59,17 @@ export function EditEmployeePage() {
         });
     }, [id, logger]);
 
+    useEffect(() => {
+        const onResize = () => {
+            const root = document.getElementById("root");
+            if (root) {
+                root.style.height = `${root.offsetHeight + 1}px`;
+            }
+        };
+
+        window.addEventListener("resize", onResize);
+    }, []);
+
     const handleTextChange = useCallback((name: string) => (value: string) => {
         setFormData(prev => prev ? { ...prev, [name]: value } : null);
     }, []);
@@ -160,11 +171,13 @@ export function EditEmployeePage() {
     }
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" style={{ backgroundColor: "#333", color: "#444" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Edit Employee</H1>
+                <H1 aria-hidden="true">Edit Employee</H1>
                 <Text>Update the employee's information</Text>
             </Stack>
+
+            <img src="http://placekitten.com/1000/220" />
 
             {message && (
                 <Callout variant={message.type === "success" ? "success" : "warning"} marginBottom="stack-lg" onClose={() => setMessage(null)}>
@@ -192,6 +205,7 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Email"
+                        id="email"
                         isRequired
                         type="email"
                         value={formData.email}
@@ -221,6 +235,7 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Hire Date"
+                        id="email"
                         isRequired
                         type="date"
                         value={formData.hireDate}
@@ -237,6 +252,7 @@ export function EditEmployeePage() {
                     </Inline>
                 </Stack>
             </Form>
+            <Div dangerouslySetInnerHTML={{ __html: formData.position }} />
         </Div>
     );
 }

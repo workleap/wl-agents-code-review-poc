@@ -12,3 +12,20 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.hop-Button {
+    border-radius: 2px !important;
+    background-color: #333 !important;
+    color: #444 !important;
+}
+
+.hop-Input,
+.hop-Select {
+    border-color: #999 !important;
+}
+
+.employee-list-overrides a:focus,
+.add-employee-overrides button:focus,
+.assign-mandates-overrides input:focus {
+    outline: none !important;
+}

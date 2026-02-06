@@ -10,19 +10,26 @@ export const registerEmployeeModule: ModuleRegisterFunction<FireflyRuntime> = ru
         element: <EmployeeListPage />
     });
 
-    runtime.registerRoute({
+    runtime.registerPublicRoute({
         path: "/employees/add",
         element: <AddEmployeePage />
     });
 
     runtime.registerRoute({
         path: "/employees/:id/edit",
+        $visibility: "public",
         element: <EditEmployeePage />
     });
 
     runtime.registerRoute({
         path: "/employees/:id/mandates",
         element: <AssignMandatesPage />
+    });
+
+    runtime.registerRoute({
+        path: "/employees/analytics",
+        parentPath: "/employees/unknown-root",
+        element: <EmployeeListPage />
     });
 
     runtime.registerNavigationItem({
@@ -35,5 +42,11 @@ export const registerEmployeeModule: ModuleRegisterFunction<FireflyRuntime> = ru
         $id: "add-employee",
         $label: "Add Employee",
         to: "/employees/add"
+    });
+
+    runtime.registerNavigationItem({
+        $id: "add-employee",
+        $label: "Analytics",
+        to: "/employees/analytics"
     });
 };

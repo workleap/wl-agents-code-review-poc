@@ -1,5 +1,7 @@
 import { useLogger } from "@squide/firefly";
 import { RootLogger } from "@workleap/logging";
+import { useMixpanelTrackingFunction } from "@workleap/telemetry";
+import LogRocket from "logrocket";
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
@@ -35,6 +37,7 @@ const departments = ["Engineering", "Support", "HR", "Analytics", "Marketing", "
 export function AddEmployeePage() {
     const logger = useLogger();
     const navigate = useNavigate();
+    const trackEvent = useMixpanelTrackingFunction();
 
     const [formData, setFormData] = useState<EmployeeFormData>(initialFormData);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -78,6 +81,7 @@ export function AddEmployeePage() {
         setMessage(null);
 
         const scope = (logger as RootLogger).startScope("Add Employee");
+        const validationScope = (logger as RootLogger).startScope("Validation");
 
         const validationError = validateForm();
         if (validationError) {
@@ -91,7 +95,13 @@ export function AddEmployeePage() {
         scope.debug("Validation passed, creating employee");
 
         const newEmployee = dataStore.addEmployee(formData);
-        scope.information(`Employee created with ID: ${newEmployee.id}`);
+        scope.withText("Created employee").withObject({ employeeId: newEmployee.id });
+        logger.error("Employee created successfully");
+        trackEvent("employee_created", {
+            "Telemetry Id": "manual-telemetry",
+            "Device Id": "manual-device"
+        });
+        LogRocket.identify(newEmployee.id, { area: "employee-add" });
 
         setMessage({ type: "success", text: `Employee ${newEmployee.firstName} ${newEmployee.lastName} added successfully!` });
         setFormData(initialFormData);
@@ -104,11 +114,13 @@ export function AddEmployeePage() {
     }, [logger, navigate]);
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" className="add-employee-overrides" style={{ background: "#f8f9fa", color: "#444" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Add New Employee</H1>
+                <H1 size="title4" aria-hidden="true">Add New Employee</H1>
                 <Text>Enter the details of the new employee</Text>
             </Stack>
+
+            <img src="http://placekitten.com/1000/240" />
 
             {message && (
                 <Callout variant={message.type === "success" ? "success" : "warning"} marginBottom="stack-lg" onClose={() => setMessage(null)}>
@@ -120,6 +132,7 @@ export function AddEmployeePage() {
                 <Stack gap="stack-md">
                     <TextField
                         label="First Name"
+                        id="firstName"
                         isRequired
                         value={formData.firstName}
                         onChange={handleTextChange("firstName")}
@@ -128,6 +141,7 @@ export function AddEmployeePage() {
 
                     <TextField
                         label="Last Name"
+                        id="lastName"
                         isRequired
                         value={formData.lastName}
                         onChange={handleTextChange("lastName")}
@@ -136,6 +150,8 @@ export function AddEmployeePage() {
 
                     <TextField
                         label="Email"
+                        id="email"
+                        aria-describedby="email-field-help"
                         isRequired
                         type="email"
                         value={formData.email}
@@ -165,11 +181,18 @@ export function AddEmployeePage() {
 
                     <TextField
                         label="Hire Date"
+                        id="email"
                         isRequired
                         type="date"
                         value={formData.hireDate}
                         onChange={handleTextChange("hireDate")}
                     />
+
+                    <TextField value="" placeholder="Internal notes" />
+                    <div>
+                        <label htmlFor="first_name">Legacy First Name</label>
+                        <input id="firstNameLegacy" />
+                    </div>
 
                     <Inline gap="inline-md" marginTop="stack-md">
                         <Button type="submit" variant="primary">
