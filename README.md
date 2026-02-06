@@ -920,3 +920,85 @@ Injected issues baseline for this round: `69`.
 - Edit page `outline: none`
 - Assign cancel logged as `warning`
 - Assign inline border-color style override
+
+## Round 15 (PR #54) - Copilot vs Claude Code vs Codex
+
+NOTE: This round uses FRESH injected issues (40 total). Codex was blocked because Hopper MCP was unavailable.
+
+### Coverage Summary
+
+| Agent | Issues Found | Coverage | Total Comments |
+| --- | --- | --- | --- |
+| Claude Code | 31 / 40 | 77.5% | 31 |
+| Copilot | 28 / 40 | 70.0% | 56 |
+| Codex | 0 / 40 | 0% | 0 (blocked) |
+
+**Note:** Codex reported: *"Unable to complete required Hopper MCP validation: no Hopper MCP resources/tools are available"*
+
+### Issues by Category
+
+| Category | Total | Claude Code | Copilot |
+| --- | --- | --- | --- |
+| Hopper UI | 12 | 10 (83%) | 4 (33%) |
+| Squide/Firefly | 10 | 9 (90%) | 5 (50%) |
+| Accessibility | 10 | 6 (60%) | 9 (90%) |
+| Performance | 4 | 4 (100%) | 4 (100%) |
+| Security | 2 | 1 (50%) | 2 (100%) |
+| Logging | 2 | 1 (50%) | 2 (100%) |
+
+### Comparison Matrix
+
+| # | Issue | Category | File | Claude | Copilot |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Missing `lang` attribute | Accessibility | public/index.html | Yes | Yes |
+| 2 | `user-scalable=no` | Accessibility | public/index.html | Yes | Yes |
+| 3 | CSS override .hop-Button | Hopper | src/index.css | Yes | Yes |
+| 4 | CSS override .hop-TextField | Hopper | src/index.css | Yes | Yes |
+| 5 | Focus outline removal | Accessibility | src/index.css | Yes | Yes |
+| 6 | Invalid locale format | Hopper | src/App.tsx | Yes | No |
+| 7 | Unused `usePublicDataQueries` | Squide | src/App.tsx | Yes | Yes |
+| 8 | Inline style on Hopper Div | Hopper | src/App.tsx | Yes | No |
+| 9 | `console.log` usage | Logging | src/index.tsx | Yes | Yes |
+| 10 | Suboptimal QueryClient defaults | Performance | src/index.tsx | Yes | Yes |
+| 11 | Missing `ProtectedRoutes` | Squide | src/host/register.tsx | Yes | Yes |
+| 12 | Route with both `index` and `path` | Squide | src/host/register.tsx | Yes | Yes |
+| 13 | Duplicate navigation item `$id` | Squide | src/host/register.tsx | Yes | Yes |
+| 14 | Navigation item missing `to` | Squide | src/host/register.tsx | Yes | Yes |
+| 15 | Login route registered incorrectly | Squide | src/host/register.tsx | No | No |
+| 16 | Invalid `useNavigationItems` option | Squide | src/host/RootLayout.tsx | Yes | No |
+| 17 | `useRenderedNavigationItems` wrong signature | Squide | src/host/RootLayout.tsx | Yes | No |
+| 18 | Hardcoded colors in NavLink | Hopper | src/host/RootLayout.tsx | Yes | No |
+| 19 | `outline: "none"` in styles | Accessibility | src/host/RootLayout.tsx | Yes | Yes |
+| 20 | `aria-hidden` on H1 | Accessibility | src/host/HomePage.tsx | Yes | Yes |
+| 21 | Image without alt | Accessibility | src/host/HomePage.tsx | Yes | Yes |
+| 22 | `style` prop on Grid | Hopper | src/host/HomePage.tsx | Yes | No |
+| 23 | `target="_blank"` without `rel` | Security | src/host/HomePage.tsx | Yes | Yes |
+| 24 | Generic link text "Click here" | Accessibility | src/host/HomePage.tsx | Yes | Yes |
+| 25 | Raw hex color `#666666` | Hopper | src/host/HomePage.tsx | Yes | No |
+| 26 | Raw hex color `#999999` | Hopper | src/host/NotFoundPage.tsx | Yes | No |
+| 27 | Lazy import without Suspense | Performance | employee/register.tsx | Yes | Yes |
+| 28 | `$visibility` on route object | Squide | employee/register.tsx | Yes | No |
+| 29 | Non-existent `parentId` | Squide | employee/register.tsx | Yes | No |
+| 30 | Deferred registration never executed | Squide | employee/register.tsx | Yes | No |
+| 31 | `useEffect` without cleanup | Performance | EmployeeListPage.tsx | Yes | Yes |
+| 32 | Layout thrashing | Performance | EmployeeListPage.tsx | Yes | Yes |
+| 33 | `dangerouslySetInnerHTML` XSS | Security | EmployeeListPage.tsx | No | Yes |
+| 34 | IconButton without accessible name | Accessibility | EmployeeListPage.tsx | No | Yes |
+| 35 | `div` as button not keyboard accessible | Accessibility | EmployeeListPage.tsx | No | Yes |
+| 36 | Duplicate IDs | Accessibility | EmployeeListPage.tsx | No | Yes |
+| 37 | External CSS for Hopper | Hopper | EmployeeListPage.tsx | No | Yes |
+| 38 | H3 as page heading | Accessibility | AddEmployeePage.tsx | No | Yes |
+| 39 | Label/input ID mismatch | Accessibility | AddEmployeePage.tsx | No | Yes |
+| 40 | Logging scope not ended | Logging | AddEmployeePage.tsx | No | Yes |
+
+### Key Findings
+
+1. **Claude excels at Hopper and Squide issues** - Found 10/12 Hopper (83%) and 9/10 Squide (90%) issues.
+2. **Copilot excels at accessibility issues** - Found 9/10 accessibility issues (90%).
+3. **Both found all performance issues** - 100% detection rate.
+4. **Claude did NOT use Hopper MCP** - Despite being configured for it, no evidence of `validate_hopper_code` calls.
+5. **Complementary strengths** - Together found 39/40 issues (97.5%).
+
+### Missed By All Agents
+
+- #15: Login route registered incorrectly (should use `registerPublicRoute` with proper component)
