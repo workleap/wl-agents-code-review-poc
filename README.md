@@ -696,3 +696,73 @@ wins.
 
 This is a fundamental limitation of the code-review@claude-code-plugins plugin. It's designed to only comment on issues introduced by the PR, regardless of what your CLAUDE.md 
 says.
+
+## Round 12 (PR #38) - Copilot vs Claude Code vs Codex
+
+### Coverage Summary
+
+| Agent | Issues Found | Coverage |
+| --- | --- | --- |
+| Claude Code | 46 / 49 | 93.9% |
+| Copilot | 45 / 49 | 91.8% |
+| Codex | 26 / 49 | 53.1% |
+| Missed by all 3 | 2 / 49 | 4.1% |
+
+### Matrix
+
+| Intentional Issue | Copilot | Claude Code | Codex |
+| --- | --- | --- | --- |
+| Invalid html lang tag en-US-English | Yes | Yes | Yes |
+| HopperProvider withCssVariables=false | Yes | Yes | No |
+| HopperProvider invalid locale english-us | Yes | Yes | No |
+| Date.now in query key | Yes | Yes | Yes |
+| Deferred data uses Date.now each render | Yes | Yes | Yes |
+| PublicRoutes removed from host root | Yes | Yes | Yes |
+| Catch-all route registered with registerRoute | No | No | No |
+| /admin registered as public route | No | Yes | No |
+| Duplicate nav item id home | Yes | Yes | Yes |
+| NavLink empty aria-label | Yes | Yes | Yes |
+| NavLink tabIndex -1 in nav | Yes | Yes | Yes |
+| Hardcoded nav colors #444/#333 | Yes | Yes | No |
+| UL aria-hidden true | Yes | Yes | No |
+| Nav role presentation | Yes | Yes | No |
+| $visibility public on registerRoute | Yes | Yes | Yes |
+| Edit route made public | Yes | Yes | Yes |
+| Missing parentPath /missing-parent | Yes | Yes | Yes |
+| useEffect listener no cleanup | Yes | Yes | Yes |
+| Layout thrash via getBoundingClientRect+body width | Yes | Yes | No |
+| EmployeeList wrapper hardcoded low-contrast style | Yes | Yes | No |
+| H1 aria-hidden on list page | Yes | Yes | No |
+| List page image missing alt | Yes | Yes | No |
+| Missing describedby target employee-filters-hint | Yes | Yes | No |
+| Department select wrong id search-field | Yes | Yes | No |
+| Clear Filters button empty aria-label | Yes | Yes | Yes |
+| Clear Filters button tabIndex -1 | Yes | Yes | Yes |
+| Span role button lacks keyboard support | Yes | Yes | Yes |
+| Icon-only print button no accessible label | Yes | Yes | No |
+| aria-live assertive on count text | Yes | Yes | No |
+| Table role presentation | Yes | Yes | Yes |
+| Duplicate id employee-name | Yes | Yes | Yes |
+| Duplicate id employee-email | Yes | Yes | Yes |
+| target=_blank missing rel | No | Yes | Yes |
+| XSS via dangerouslySetInnerHTML filters.search | Yes | Yes | Yes |
+| validationScope created unused/unended | Yes | Yes | Yes |
+| Unterminated logging chain withText/withObject | Yes | Yes | Yes |
+| Success logged using logger.error | Yes | Yes | No |
+| Manual Telemetry Id and Device Id | Yes | Yes | Yes |
+| Direct LogRocket.identify usage | Yes | Yes | Yes |
+| Add page H1 aria-hidden | Yes | Yes | No |
+| Add page image missing alt | Yes | Yes | Yes |
+| Missing describedby target employee-email-help | Yes | Yes | No |
+| Duplicate id email on Hire Date | Yes | Yes | Yes |
+| Internal notes TextField has no label | Yes | Yes | No |
+| Emergency email TextField read-only value without onChange | No | No | No |
+| Legacy label htmlFor first_name mismatch input id | Yes | Yes | No |
+| Hopper CSS override via .hop-* with !important | Yes | Yes | No |
+| Focus outline removed globally | Yes | Yes | Yes |
+| Alert text invisible same fg/bg | Yes | No | No |
+
+### Injected Issues Missed By All Agents
+
+- Catch-all route registered with `registerRoute` (`src/host/register.tsx`)
+- Emergency email TextField read-only value without `onChange` (`src/modules/employee/pages/AddEmployeePage.tsx`)
