@@ -59,7 +59,7 @@ jobs:
           claude_args: >-
             --mcp-config "{\"mcpServers\": {\"hopper\": {\"url\":\"https://hopper.workleap.design/mcp\",\"type\":\"http\"}}}"
             --allowed-tools
-            "Read,Write,Grep,Glob,Skill,
+            "Read,Write,Grep,Glob,Skill,Task,
              Bash(gh pr *),
-             mcp__github_inline_comment__*
+             mcp__github_inline_comment__*,
              mcp__hopper__*"

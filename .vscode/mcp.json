@@ -1,0 +1,13 @@
+{
+    "servers": {
+        "hopper": {
+            "url": "https://hopper.workleap.design/mcp",
+            "type": "http"
+        },
+        "chrome-devtools": {
+            "type": "stdio",
+            "command": "npx",
+            "args": ["-y", "chrome-devtools-mcp@latest"]
+        }
+    }
+}

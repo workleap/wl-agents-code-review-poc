@@ -42,7 +42,7 @@ Run on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
 ### Hard stop
 
 - If you cannot connect to Hopper MCP.
-- If changed lines are in files importing from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system` and those lines have not been validated using the `validate_hopper_code tool`.
+- If changed lines are in files importing from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system` and those lines have not been validated using the `validate_hopper_code` tool.
 
 ### Issues reporting
 
