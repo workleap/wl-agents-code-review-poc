@@ -27,15 +27,16 @@ Run on every `.ts`, `.tsx`, `.js`, `.jsx` file (changed lines only):
 
 ### Mandatory Hopper MCP validation
 
-The Hopper MCP server configuration is available in the root `mcp.json` file.
-
 IMPORTANT:
-- When changed lines are in files importing from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system`, use Hopper MCP server tools to assist with code review tasks if the changes are frontend related.
-- When changed lines are in files importing from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system`, you MUST call the `validate_hopper_code` tool to assist with code review tasks if the changes are frontend related.
+- The Hopper MCP server configuration is available in the root `mcp.json` file.
+- When changed lines are in files importing from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system`, use Hopper MCP server tools to assist with code review tasks and you MUST call the `validate_hopper_code` tool.
 
-Required behavior:
+REQUIRED:
 - Include Hopper-specific findings using category `hopper`.
-- If no Hopper issue is found, explicitly report that Hopper checks were executed and no Hopper issues were identified. 
+- If no Hopper issue is found, explicitly report that Hopper checks were executed and no Hopper issues were identified.
+
+HARD STOP:
+- When changed lines are in files importing from `@hopper-ui/components`, `@hopper-ui/icons`, or `@hopper-ui/styled-system` and the changed lines are validated with the `validate_hopper_code` tool.
 
 ### Issue reporting
 
