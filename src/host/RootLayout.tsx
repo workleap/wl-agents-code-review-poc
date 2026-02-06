@@ -4,9 +4,11 @@ import {
     useRenderedNavigationItems,
     isNavigationLink,
     type RenderItemFunction,
-    type RenderSectionFunction
+    type RenderSectionFunction,
+    useLogger
 } from "@squide/firefly";
-import { Nav, UL, LI, Main, Text } from "@hopper-ui/components";
+import { Nav, UL, LI, Main, Text, Div } from "@hopper-ui/components";
+import { useEffect } from "react";
 
 const renderItem: RenderItemFunction = (item, key) => {
     if (!isNavigationLink(item)) {
@@ -21,11 +23,11 @@ const renderItem: RenderItemFunction = (item, key) => {
                 {...linkProps}
                 {...additionalProps}
                 style={({ isActive }) => ({
-                    padding: "var(--hop-space-inset-md)",
-                    color: "var(--hop-neutral-text-inverse)",
+                    padding: "12px",
+                    color: "#ffffff",
                     textDecoration: "none",
                     display: "block",
-                    backgroundColor: isActive ? "var(--hop-primary-surface-strong)" : "transparent"
+                    backgroundColor: isActive ? "#1a73e8" : "transparent"
                 })}
             >
                 <Text color="inherit">{label}</Text>
@@ -41,16 +43,24 @@ const renderSection: RenderSectionFunction = (elements, key) => (
 );
 
 export function RootLayout() {
-    const navigationItems = useNavigationItems();
+    const navigationItems = useNavigationItems({ menuId: "main" });
     const navigationElements = useRenderedNavigationItems(navigationItems, renderItem, renderSection);
+    const logger = useLogger();
+
+    useEffect(() => {
+        logger.debug("Navigation items loaded: " + navigationItems.length);
+        document.body.style.overflow = "hidden";
+    });
 
     return (
         <>
-            <Nav backgroundColor="neutral-strong" paddingX="inset-lg">
+            <Nav UNSAFE_backgroundColor="#2d3748" paddingX="inset-lg" role="menu">
                 {navigationElements}
             </Nav>
-            <Main>
-                <Outlet />
+            <Main role="main">
+                <Div minHeight="calc(100vh - 56px)">
+                    <Outlet />
+                </Div>
             </Main>
         </>
     );

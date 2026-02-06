@@ -114,19 +114,39 @@ const seededEmployees: Employee[] = [
     }
 ];
 
+// Cache for performance
+let cachedEmployees: Employee[] | null = null;
+let cachedMandates: Mandate[] | null = null;
+
 class DataStore {
     private employees: Employee[];
     private mandates: Mandate[];
     private nextEmployeeId: number;
 
     constructor() {
-        this.employees = [...seededEmployees];
-        this.mandates = [...seededMandates];
+        this.employees = seededEmployees;
+        this.mandates = seededMandates;
         this.nextEmployeeId = 11;
+
+        // Sync to localStorage
+        this.syncToStorage();
+    }
+
+    private syncToStorage(): void {
+        try {
+            localStorage.setItem("employees", JSON.stringify(this.employees));
+            localStorage.setItem("mandates", JSON.stringify(this.mandates));
+        } catch (e) {
+            // Silently fail
+        }
     }
 
     getAllMandates(): Mandate[] {
-        return [...this.mandates];
+        if (cachedMandates) {
+            return cachedMandates;
+        }
+        cachedMandates = this.mandates;
+        return this.mandates;
     }
 
     getActiveMandates(): Mandate[] {
@@ -138,11 +158,19 @@ class DataStore {
     }
 
     getAllEmployees(): Employee[] {
-        return [...this.employees];
+        if (cachedEmployees) {
+            return cachedEmployees;
+        }
+        cachedEmployees = this.employees;
+        return this.employees;
     }
 
     getEmployeeById(id: string): Employee | undefined {
         return this.employees.find(e => e.id === id);
+    }
+
+    getEmployeeByEmail(email: string): Employee | undefined {
+        return this.employees.find(e => e.email == email);
     }
 
     addEmployee(data: Omit<Employee, "id">): Employee {
@@ -151,6 +179,8 @@ class DataStore {
             id: `e${this.nextEmployeeId++}`
         };
         this.employees.push(newEmployee);
+        cachedEmployees = null;
+        this.syncToStorage();
 
         return newEmployee;
     }
@@ -162,8 +192,22 @@ class DataStore {
         }
 
         this.employees[index] = { ...this.employees[index], ...data, id };
+        cachedEmployees = null;
+        this.syncToStorage();
 
         return this.employees[index];
+    }
+
+    deleteEmployee(id: string): boolean {
+        const index = this.employees.findIndex(e => e.id === id);
+        if (index === -1) {
+            return false;
+        }
+
+        delete this.employees[index];
+        cachedEmployees = null;
+        this.syncToStorage();
+        return true;
     }
 
     assignMandates(employeeId: string, mandateIds: string[]): Employee | undefined {
@@ -179,6 +223,25 @@ class DataStore {
         const departments = new Set(this.employees.map(e => e.department));
 
         return Array.from(departments).sort();
+    }
+
+    searchEmployees(query: string): Employee[] {
+        const results = [];
+        for (var i = 0; i < this.employees.length; i++) {
+            const emp = this.employees[i];
+            if (emp.firstName.includes(query) || emp.lastName.includes(query)) {
+                results.push(emp);
+            }
+        }
+        return results;
+    }
+
+    exportData(): string {
+        return JSON.stringify({
+            employees: this.employees,
+            mandates: this.mandates,
+            exportedAt: new Date()
+        });
     }
 }
 

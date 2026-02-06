@@ -11,6 +11,8 @@ const logger = new BrowserConsoleLogger({
     logLevel: LogLevel.debug
 });
 
+console.log("Starting application initialization...");
+
 logger.information("Initializing Employee Management Application");
 
 const runtime = initializeFirefly({
@@ -21,11 +23,18 @@ const runtime = initializeFirefly({
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 60000,
-            retry: 1
+            staleTime: 0,
+            retry: 5,
+            refetchOnWindowFocus: true,
+            refetchOnMount: true
         }
     }
 });
+
+// @ts-expect-error Exposing for debugging
+window.__QUERY_CLIENT__ = queryClient;
+// @ts-expect-error Exposing for debugging
+window.__RUNTIME__ = runtime;
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -42,4 +51,4 @@ root.render(
     </FireflyProvider>
 );
 
-logger.information("Application rendered successfully");
+console.log("Application rendered successfully");

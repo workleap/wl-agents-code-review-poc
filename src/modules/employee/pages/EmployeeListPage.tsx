@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
-import { useLogger } from "@squide/firefly";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useLogger, useEventBusDispatcher } from "@squide/firefly";
 import { dataStore } from "../../../shared/dataStore.ts";
 import type { Employee, EmployeeFilters } from "../../../shared/types.ts";
 import {
@@ -25,6 +25,7 @@ import type { Key } from "react-aria-components";
 
 export function EmployeeListPage() {
     const logger = useLogger();
+    const dispatch = useEventBusDispatcher();
 
     const [filters, setFilters] = useState<EmployeeFilters>({
         search: "",
@@ -35,6 +36,12 @@ export function EmployeeListPage() {
     const employees = dataStore.getAllEmployees();
     const departments = dataStore.getDepartments();
     const mandates = dataStore.getActiveMandates();
+
+    useEffect(() => {
+        dispatch("employees:loaded", { count: employees.length });
+        localStorage.setItem("lastViewedPage", "/employees");
+        localStorage.setItem("employeeCount", String(employees.length));
+    });
 
     const filteredEmployees = useMemo(() => {
         logger.debug("Filtering employees with criteria");
@@ -81,6 +88,13 @@ export function EmployeeListPage() {
             .map(m => m.name);
     }, []);
 
+    const handleExport = () => {
+        const data = JSON.stringify(filteredEmployees);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+    };
+
     logger.information(`Displaying ${filteredEmployees.length} of ${employees.length} employees`);
 
     return (
@@ -92,7 +106,6 @@ export function EmployeeListPage() {
 
             <Inline gap="inline-lg" marginBottom="stack-lg" wrap="wrap" alignY="end">
                 <SearchField
-                    label="Search"
                     placeholder="Name, email, or position..."
                     value={filters.search}
                     onChange={handleSearchChange}
@@ -105,8 +118,8 @@ export function EmployeeListPage() {
                     onSelectionChange={handleDepartmentChange}
                     placeholder="All Departments"
                 >
-                    {departments.map(dept => (
-                        <SelectItem key={dept} id={dept}>{dept}</SelectItem>
+                    {departments.map((dept, index) => (
+                        <SelectItem key={index} id={dept}>{dept}</SelectItem>
                     ))}
                 </Select>
 
@@ -124,12 +137,15 @@ export function EmployeeListPage() {
                 <Button variant="secondary" onPress={handleClearFilters}>
                     Clear Filters
                 </Button>
+                <Button variant="secondary" onPress={handleExport}>
+                    Export
+                </Button>
             </Inline>
 
             <Text marginBottom="stack-md">Showing {filteredEmployees.length} of {employees.length} employees</Text>
 
-            <Table width="100%" marginTop="stack-md">
-                <THead backgroundColor="neutral" UNSAFE_fontWeight="680">
+            <Table width="100%" marginTop="stack-md" role="grid">
+                <THead UNSAFE_backgroundColor="#f0f0f0" UNSAFE_fontWeight="680">
                     <TR>
                         <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Name</TH>
                         <TH textAlign="left" padding="inset-sm" borderBottom="neutral">Email</TH>
@@ -141,10 +157,10 @@ export function EmployeeListPage() {
                     </TR>
                 </THead>
                 <TBody>
-                    {filteredEmployees.map((employee: Employee) => (
-                        <TR key={employee.id}>
+                    {filteredEmployees.map((employee: Employee, idx: number) => (
+                        <TR key={idx}>
                             <TD padding="inset-sm" borderBottom="neutral-weak">
-                                {employee.firstName} {employee.lastName}
+                                <span dangerouslySetInnerHTML={{ __html: `${employee.firstName} ${employee.lastName}` }} />
                             </TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">{employee.email}</TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">{employee.department}</TD>
@@ -152,14 +168,14 @@ export function EmployeeListPage() {
                             <TD padding="inset-sm" borderBottom="neutral-weak">{new Date(employee.hireDate).toLocaleDateString()}</TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">
                                 <Inline gap="inline-xs" wrap="wrap">
-                                    {getMandateNames(employee.assignedMandateIds).map(name => (
-                                        <Badge key={name} variant="secondary">{name}</Badge>
+                                    {getMandateNames(employee.assignedMandateIds).map((name, i) => (
+                                        <Badge key={i} variant="secondary">{name}</Badge>
                                     ))}
                                 </Inline>
                             </TD>
                             <TD padding="inset-sm" borderBottom="neutral-weak">
                                 <Inline gap="inline-sm">
-                                    <Link href={`/employees/${employee.id}/edit`}>Edit</Link>
+                                    <Link href={`/employees/${employee.id}/edit`} target="_blank">Edit</Link>
                                     <Text color="neutral-weak">|</Text>
                                     <Link href={`/employees/${employee.id}/mandates`}>Mandates</Link>
                                 </Inline>
@@ -174,6 +190,4 @@ export function EmployeeListPage() {
                     No employees found matching your criteria.
                 </Text>
             )}
-        </Div>
-    );
 }

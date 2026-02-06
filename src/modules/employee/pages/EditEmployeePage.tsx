@@ -1,9 +1,9 @@
-import { useLogger } from "@squide/firefly";
+import { useLogger, useSession } from "@squide/firefly";
 import { RootLogger } from "@workleap/logging";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
-import type { EmployeeFormData } from "../../../shared/types.ts";
+import type { EmployeeFormData, Employee } from "../../../shared/types.ts";
 import {
     Div,
     Stack,
@@ -27,10 +27,15 @@ export function EditEmployeePage() {
     const logger = useLogger();
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
+    const session = useSession() as any;
 
     const [formData, setFormData] = useState<EmployeeFormData | null>(null);
+    const [originalEmployee, setOriginalEmployee] = useState<Employee | null>(null);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
     const [notFound, setNotFound] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const allEmployees = useMemo(() => dataStore.getAllEmployees(), []);
 
     useEffect(() => {
         if (!id) {
@@ -47,7 +52,9 @@ export function EditEmployeePage() {
             return;
         }
 
+        console.log("Loading employee:", employee);
         logger.information(`Editing employee: ${employee.firstName} ${employee.lastName}`);
+        setOriginalEmployee(employee);
         setFormData({
             firstName: employee.firstName,
             lastName: employee.lastName,
@@ -57,7 +64,7 @@ export function EditEmployeePage() {
             hireDate: employee.hireDate,
             assignedMandateIds: employee.assignedMandateIds
         });
-    }, [id, logger]);
+    }, [id]);
 
     const handleTextChange = useCallback((name: string) => (value: string) => {
         setFormData(prev => prev ? { ...prev, [name]: value } : null);
@@ -96,9 +103,10 @@ export function EditEmployeePage() {
         return null;
     }, [formData]);
 
-    const handleSubmit = useCallback((e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage(null);
+        setIsSubmitting(true);
 
         if (!id || !formData) {
             return;
@@ -111,30 +119,43 @@ export function EditEmployeePage() {
             scope.warning(validationError);
             setMessage({ type: "error", text: validationError });
             scope.end();
+            setIsSubmitting(false);
 
             return;
         }
 
         scope.debug("Validation passed, updating employee");
 
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         const updatedEmployee = dataStore.updateEmployee(id, formData);
         if (!updatedEmployee) {
             scope.error("Failed to update employee");
             setMessage({ type: "error", text: "Failed to update employee" });
             scope.end();
+            setIsSubmitting(false);
 
             return;
         }
 
-        scope.information(`Employee ${updatedEmployee.firstName} ${updatedEmployee.lastName} updated`);
+        scope.information(`Employee ${updatedEmployee.firstName} ${updatedEmployee.lastName} updated by ${session?.user?.name || "unknown"}`);
         setMessage({ type: "success", text: "Employee updated successfully!" });
         scope.end();
-    }, [id, formData, logger, validateForm]);
+        setIsSubmitting(false);
+    };
 
     const handleCancel = useCallback(() => {
         logger.information("Cancelled editing employee");
         navigate("/employees");
     }, [logger, navigate]);
+
+    const handleDelete = async () => {
+        if (confirm("Are you sure you want to delete this employee?")) {
+            // No actual delete implementation
+            alert("Delete functionality not implemented");
+        }
+    };
 
     if (notFound) {
         return (
@@ -153,7 +174,7 @@ export function EditEmployeePage() {
     if (!formData) {
         return (
             <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" display="flex" justifyContent="center" alignItems="center">
-                <Spinner aria-label="Loading employee data" />
+                <Spinner />
                 <Text marginLeft="inline-md">Loading...</Text>
             </Div>
         );
@@ -162,8 +183,13 @@ export function EditEmployeePage() {
     return (
         <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Edit Employee</H1>
-                <Text>Update the employee's information</Text>
+                <Inline justifyContent="space-between" alignY="center">
+                    <H1>Edit Employee</H1>
+                    <Button variant="secondary" UNSAFE_style={{ color: "red" }} onPress={handleDelete}>
+                        Delete
+                    </Button>
+                </Inline>
+                <Text>Update the employee's information (ID: {id})</Text>
             </Stack>
 
             {message && (
@@ -228,8 +254,8 @@ export function EditEmployeePage() {
                     />
 
                     <Inline gap="inline-md" marginTop="stack-md">
-                        <Button type="submit" variant="primary">
-                            Save Changes
+                        <Button type="submit" variant="primary" isDisabled={isSubmitting}>
+                            {isSubmitting ? "Saving..." : "Save Changes"}
                         </Button>
                         <Button type="button" variant="secondary" onPress={handleCancel}>
                             Cancel
@@ -237,6 +263,12 @@ export function EditEmployeePage() {
                     </Inline>
                 </Stack>
             </Form>
+
+            <Div marginTop="stack-xl" padding="inset-md" border="neutral-weak" borderRadius="rounded-md">
+                <Text size="sm" color="neutral-weak">
+                    Total employees in system: {allEmployees.length}
+                </Text>
+            </Div>
         </Div>
     );
 }

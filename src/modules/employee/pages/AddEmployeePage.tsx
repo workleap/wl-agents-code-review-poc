@@ -1,6 +1,6 @@
-import { useLogger } from "@squide/firefly";
+import { useLogger, useEnvironmentVariable } from "@squide/firefly";
 import { RootLogger } from "@workleap/logging";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
 import type { EmployeeFormData } from "../../../shared/types.ts";
@@ -35,19 +35,21 @@ const departments = ["Engineering", "Support", "HR", "Analytics", "Marketing", "
 export function AddEmployeePage() {
     const logger = useLogger();
     const navigate = useNavigate();
+    const apiUrl = useEnvironmentVariable("API_URL");
+    const formRef = useRef<any>(null);
 
     const [formData, setFormData] = useState<EmployeeFormData>(initialFormData);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-    const handleTextChange = useCallback((name: string) => (value: string) => {
+    const handleTextChange = (name: string) => (value: string) => {
         setFormData(prev => ({ ...prev, [name]: value }));
-    }, []);
+    };
 
     const handleDepartmentChange = useCallback((key: Key | null) => {
         setFormData(prev => ({ ...prev, department: key?.toString() ?? "" }));
     }, []);
 
-    const validateForm = useCallback((): string | null => {
+    const validateForm = (): string | null => {
         if (!formData.firstName.trim()) {
             return "First name is required";
         }
@@ -71,7 +73,7 @@ export function AddEmployeePage() {
         }
 
         return null;
-    }, [formData]);
+    };
 
     const handleSubmit = useCallback((e: React.FormEvent) => {
         e.preventDefault();
@@ -88,7 +90,7 @@ export function AddEmployeePage() {
             return;
         }
 
-        scope.debug("Validation passed, creating employee");
+        scope.debug("Validation passed, creating employee at " + apiUrl);
 
         const newEmployee = dataStore.addEmployee(formData);
         scope.information(`Employee created with ID: ${newEmployee.id}`);
@@ -96,12 +98,21 @@ export function AddEmployeePage() {
         setMessage({ type: "success", text: `Employee ${newEmployee.firstName} ${newEmployee.lastName} added successfully!` });
         setFormData(initialFormData);
         scope.end();
-    }, [formData, logger, validateForm]);
+    }, [formData, logger]);
 
     const handleCancel = useCallback(() => {
         logger.information("Cancelled adding employee");
         navigate("/employees");
     }, [logger, navigate]);
+
+    const handleReset = () => {
+        formData.firstName = "";
+        formData.lastName = "";
+        formData.email = "";
+        formData.department = "";
+        formData.position = "";
+        setFormData({ ...formData });
+    };
 
     return (
         <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
@@ -116,7 +127,7 @@ export function AddEmployeePage() {
                 </Callout>
             )}
 
-            <Form onSubmit={handleSubmit} UNSAFE_maxWidth="480px">
+            <Form onSubmit={handleSubmit} UNSAFE_maxWidth="480px" ref={formRef}>
                 <Stack gap="stack-md">
                     <TextField
                         label="First Name"
@@ -124,6 +135,7 @@ export function AddEmployeePage() {
                         value={formData.firstName}
                         onChange={handleTextChange("firstName")}
                         placeholder="Enter first name"
+                        autoComplete="off"
                     />
 
                     <TextField
@@ -132,6 +144,7 @@ export function AddEmployeePage() {
                         value={formData.lastName}
                         onChange={handleTextChange("lastName")}
                         placeholder="Enter last name"
+                        autoComplete="off"
                     />
 
                     <TextField
@@ -177,6 +190,9 @@ export function AddEmployeePage() {
                         </Button>
                         <Button type="button" variant="secondary" onPress={handleCancel}>
                             Cancel
+                        </Button>
+                        <Button type="button" variant="secondary" onPress={handleReset}>
+                            Reset
                         </Button>
                     </Inline>
                 </Stack>

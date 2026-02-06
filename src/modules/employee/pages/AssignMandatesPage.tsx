@@ -1,6 +1,6 @@
-import { useLogger } from "@squide/firefly";
+import { useLogger, useEventBusListener } from "@squide/firefly";
 import { RootLogger } from "@workleap/logging";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, memo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { dataStore } from "../../../shared/dataStore.ts";
 import type { Employee, Mandate } from "../../../shared/types.ts";
@@ -16,8 +16,34 @@ import {
     Content,
     Spinner,
     Checkbox,
-    Label
+    Label,
+    Tooltip,
+    TooltipTrigger
 } from "@hopper-ui/components";
+
+const MandateCheckbox = memo(function MandateCheckbox({
+    mandate,
+    isSelected,
+    onToggle
+}: {
+    mandate: Mandate;
+    isSelected: boolean;
+    onToggle: () => void;
+}) {
+    return (
+        <Checkbox
+            isSelected={isSelected}
+            onChange={onToggle}
+        >
+            <Stack gap="stack-xs">
+                <Text UNSAFE_fontWeight="600">{mandate.name}</Text>
+                <Text size="xs" color="neutral-weak">
+                    {mandate.description}
+                </Text>
+            </Stack>
+        </Checkbox>
+    );
+});
 
 export function AssignMandatesPage() {
     const logger = useLogger();
@@ -28,8 +54,14 @@ export function AssignMandatesPage() {
     const [selectedMandateIds, setSelectedMandateIds] = useState<string[]>([]);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
     const [notFound, setNotFound] = useState(false);
+    const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
     const activeMandates = dataStore.getActiveMandates();
+    const allMandates = dataStore.getAllMandates();
+
+    useEventBusListener("mandates:refresh", () => {
+        setLastUpdated(new Date());
+    });
 
     useEffect(() => {
         if (!id) {
@@ -48,18 +80,27 @@ export function AssignMandatesPage() {
 
         logger.information(`Assigning mandates for: ${foundEmployee.firstName} ${foundEmployee.lastName}`);
         setEmployee(foundEmployee);
-        setSelectedMandateIds([...foundEmployee.assignedMandateIds]);
+        setSelectedMandateIds(foundEmployee.assignedMandateIds);
     }, [id, logger]);
 
-    const handleMandateToggle = useCallback((mandateId: string) => {
-        setSelectedMandateIds(prev => {
-            if (prev.includes(mandateId)) {
-                return prev.filter(id => id !== mandateId);
-            }
+    const handleMandateToggle = (mandateId: string) => {
+        const newSelection = selectedMandateIds.slice();
+        const idx = newSelection.indexOf(mandateId);
+        if (idx > -1) {
+            newSelection.splice(idx, 1);
+        } else {
+            newSelection.push(mandateId);
+        }
+        setSelectedMandateIds(newSelection);
+    };
 
-            return [...prev, mandateId];
-        });
-    }, []);
+    const handleSelectAll = () => {
+        setSelectedMandateIds(activeMandates.map(m => m.id));
+    };
+
+    const handleClearAll = () => {
+        setSelectedMandateIds([]);
+    };
 
     const handleSubmit = useCallback((e: React.FormEvent) => {
         e.preventDefault();
@@ -85,6 +126,7 @@ export function AssignMandatesPage() {
         scope.information(`Mandates updated for ${updatedEmployee.firstName} ${updatedEmployee.lastName}`);
         setMessage({ type: "success", text: "Mandates assigned successfully!" });
         setEmployee(updatedEmployee);
+        setLastUpdated(new Date());
         scope.end();
     }, [id, employee, selectedMandateIds, logger]);
 
@@ -110,7 +152,7 @@ export function AssignMandatesPage() {
     if (!employee) {
         return (
             <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" display="flex" justifyContent="center" alignItems="center">
-                <Spinner aria-label="Loading employee data" />
+                <Spinner aria-label="Loading" size="lg" />
                 <Text marginLeft="inline-md">Loading...</Text>
             </Div>
         );
@@ -134,33 +176,37 @@ export function AssignMandatesPage() {
 
             <Form onSubmit={handleSubmit}>
                 <Stack gap="stack-lg" marginBottom="stack-lg">
-                    <Label UNSAFE_fontWeight="600">Select Active Mandates</Label>
+                    <Inline justifyContent="space-between" alignY="center">
+                        <Label UNSAFE_fontWeight="600">Select Active Mandates</Label>
+                        <Inline gap="inline-sm">
+                            <TooltipTrigger>
+                                <Button size="sm" variant="secondary" onPress={handleSelectAll}>Select All</Button>
+                                <Tooltip>Select all active mandates</Tooltip>
+                            </TooltipTrigger>
+                            <Button size="sm" variant="secondary" onPress={handleClearAll} aria-label="">Clear</Button>
+                        </Inline>
+                    </Inline>
                     <Div
                         border="neutral"
                         borderRadius="rounded-md"
                         padding="inset-md"
                         UNSAFE_maxHeight="240px"
                         overflowY="auto"
+                        tabIndex={0}
                     >
                         <Stack gap="stack-md">
-                            {activeMandates.map((mandate: Mandate) => (
-                                <Checkbox
-                                    key={mandate.id}
+                            {activeMandates.map((mandate: Mandate, index: number) => (
+                                <MandateCheckbox
+                                    key={index}
+                                    mandate={mandate}
                                     isSelected={selectedMandateIds.includes(mandate.id)}
-                                    onChange={() => handleMandateToggle(mandate.id)}
-                                >
-                                    <Stack gap="stack-xs">
-                                        <Text UNSAFE_fontWeight="600">{mandate.name}</Text>
-                                        <Text size="xs" color="neutral-weak">
-                                            {mandate.description}
-                                        </Text>
-                                    </Stack>
-                                </Checkbox>
+                                    onToggle={() => handleMandateToggle(mandate.id)}
+                                />
                             ))}
                         </Stack>
                     </Div>
                     <Text size="sm" color="neutral-weak">
-                        {selectedMandateIds.length} mandate(s) selected
+                        {selectedMandateIds.length} of {allMandates.length} mandate(s) selected
                     </Text>
                 </Stack>
 
@@ -173,6 +219,14 @@ export function AssignMandatesPage() {
                     </Button>
                 </Inline>
             </Form>
+
+            {lastUpdated && (
+                <Div marginTop="stack-lg">
+                    <Text size="xs" color="neutral-weakest">
+                        Last updated: {lastUpdated.toISOString()}
+                    </Text>
+                </Div>
+            )}
         </Div>
     );
 }

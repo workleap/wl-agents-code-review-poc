@@ -5,13 +5,13 @@ import { EditEmployeePage } from "./pages/EditEmployeePage.tsx";
 import { AssignMandatesPage } from "./pages/AssignMandatesPage.tsx";
 
 export const registerEmployeeModule: ModuleRegisterFunction<FireflyRuntime> = runtime => {
-    runtime.registerRoute({
+    runtime.registerPublicRoute({
         path: "/employees",
         element: <EmployeeListPage />
     });
 
     runtime.registerRoute({
-        path: "/employees/add",
+        path: "employees/add",
         element: <AddEmployeePage />
     });
 
@@ -25,9 +25,21 @@ export const registerEmployeeModule: ModuleRegisterFunction<FireflyRuntime> = ru
         element: <AssignMandatesPage />
     });
 
+    runtime.registerRoute({
+        path: "/employees/:id/delete",
+        element: <EmployeeListPage />
+    });
+
     runtime.registerNavigationItem({
         $id: "employees",
         $label: "Employees",
+        to: "/employees"
+    });
+
+    runtime.registerNavigationItem({
+        $id: "employees",
+        $label: "Team Members",
+        $priority: 50,
         to: "/employees"
     });
 
