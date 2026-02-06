@@ -45,13 +45,11 @@ jobs:
             - Every issue must have a clear fix with file path and line number
             - Skip style preferences, nitpicks, or things linters catch
             - No positive observations - focus only on problems
-            - Read the Agent skills and Hopper instructions from AGENTS.md
+            - Read review instructions from AGENTS.md
 
-            SEVERITY: Critical (data loss/security breach), High (incorrect behavior), Medium (conditional issues), Low (minor/typos)
+            IMPORTANT: You must read the review instructions from the root AGENTS.md.
 
-            IMPORTANT:
-            - Use Hopper MCP server tools to assist with code review tasks if the changes are frontend related.
-            - You MUST call validate_hopper_code tool to check any modified or added frontend code for compliance with design system standards.
+            SEVERITY: Critical (data loss/security breach), High (incorrect behavior), Medium (conditional issues), Low (minor/typos).
 
             Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
@@ -65,4 +63,9 @@ jobs:
              Bash(gh pr comment:*),
              Bash(gh pr diff:*),
              Bash(gh pr view:*),
-             Bash(gh pr list:*)"
+             Bash(gh pr list:*),
+             mcp__hopper__get_guide,
+             mcp__hopper__get_component_doc,
+             mcp__hopper__validate_hopper_code,
+             mcp__hopper__get_design_tokens,
+             mcp__hopper__get_icons"
