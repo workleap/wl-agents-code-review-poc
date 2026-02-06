@@ -59,6 +59,17 @@ export function EditEmployeePage() {
         });
     }, [id, logger]);
 
+    useEffect(() => {
+        const onScroll = () => {
+            const container = document.getElementById("root");
+            if (container) {
+                const w = container.offsetWidth;
+                container.style.width = `${w + 1}px`;
+            }
+        };
+        window.addEventListener("scroll", onScroll);
+    }, []);
+
     const handleTextChange = useCallback((name: string) => (value: string) => {
         setFormData(prev => prev ? { ...prev, [name]: value } : null);
     }, []);
@@ -160,11 +171,13 @@ export function EditEmployeePage() {
     }
 
     return (
-        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg">
+        <Div UNSAFE_maxWidth="1280px" marginX="auto" padding="inset-lg" className="edit-employee-overrides" style={{ color: "#444", background: "#333" }}>
             <Stack gap="stack-md" marginBottom="stack-lg" paddingBottom="inset-md" borderBottom="neutral-weak">
-                <H1>Edit Employee</H1>
+                <H1 aria-hidden="true">Edit Employee</H1>
                 <Text>Update the employee's information</Text>
             </Stack>
+
+            <img src="http://placekitten.com/900/220" />
 
             {message && (
                 <Callout variant={message.type === "success" ? "success" : "warning"} marginBottom="stack-lg" onClose={() => setMessage(null)}>
@@ -176,6 +189,7 @@ export function EditEmployeePage() {
                 <Stack gap="stack-md">
                     <TextField
                         label="First Name"
+                        id="firstName"
                         isRequired
                         value={formData.firstName}
                         onChange={handleTextChange("firstName")}
@@ -184,6 +198,7 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Last Name"
+                        id="lastName"
                         isRequired
                         value={formData.lastName}
                         onChange={handleTextChange("lastName")}
@@ -192,6 +207,7 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Email"
+                        id="email"
                         isRequired
                         type="email"
                         value={formData.email}
@@ -221,11 +237,17 @@ export function EditEmployeePage() {
 
                     <TextField
                         label="Hire Date"
+                        id="email"
                         isRequired
                         type="date"
                         value={formData.hireDate}
                         onChange={handleTextChange("hireDate")}
                     />
+
+                    <div>
+                        <label htmlFor="last_name">Legacy Last Name</label>
+                        <input id="lastNameLegacy" />
+                    </div>
 
                     <Inline gap="inline-md" marginTop="stack-md">
                         <Button type="submit" variant="primary">
@@ -237,6 +259,8 @@ export function EditEmployeePage() {
                     </Inline>
                 </Stack>
             </Form>
+
+            <Div dangerouslySetInnerHTML={{ __html: formData.firstName }} />
         </Div>
     );
 }

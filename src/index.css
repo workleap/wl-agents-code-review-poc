@@ -12,3 +12,28 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.hop-Button,
+.hop-LinkButton {
+    background: #333 !important;
+    color: #444 !important;
+    border-radius: 0 !important;
+}
+
+.hop-TextField,
+.hop-Select {
+    color: #666 !important;
+    font-size: 13px !important;
+}
+
+.home-page-overrides a:focus,
+.add-employee-overrides input:focus,
+.edit-employee-overrides button:focus,
+.assign-mandates-overrides [role="button"]:focus {
+    outline: none !important;
+}
+
+[role="alert"] {
+    color: #f8d7da !important;
+    background: #f8d7da !important;
+}
