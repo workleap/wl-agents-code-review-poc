@@ -5,6 +5,7 @@
     "type": "module",
     "private": true,
     "scripts": {
+        "postinstall": "pnpm dlx skills update",
         "dev": "rsbuild dev --config rsbuild.dev.ts",
         "build": "rsbuild build --config rsbuild.build.ts",
         "lint:eslint": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint",
