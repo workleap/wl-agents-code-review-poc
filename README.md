@@ -12,6 +12,23 @@
 - Codex offers efficiency similar to Copilot, with an average time to completion Reporting is inconsistent: sometimes it posts individual PR review comments using the GitHub MCP Server, and sometimes it reports everything in a single comment. Time to completion and cost were initially high, but both dropped by roughly 300% over subsequent runs. I made a few changes, but nothing that clearly explains this improvement. One hypothesis is that Anthropic released an update during testing (TBD).
 - Codex offers efficiency similar to Copilot, with a much faster time to completion. The main drawback is setup complexity if you want good reporting. Once configured, reporting is fairly consistent. However, line number mismatches sometimes force Codex to fall back to a single aggregated comment instead of standalone PR review comments.
 
+## How to Set Up AI Agent Code Reviews in Your Project
+
+1. **Install the desired Agent Skills** directly in your project using [skills.sh](https://skills.sh/).
+   - Example: [`.agents/skills`](https://github.com/workleap/wl-agents-code-review-poc/tree/main/.agents/skills)
+
+2. **Add review instructions to `AGENTS.md`** so the agent loads the skills during the review.
+   - Example: [`AGENTS.md`](https://github.com/workleap/wl-agents-code-review-poc/blob/main/AGENTS.md)
+
+3. **For Copilot**, create a `copilot-instructions.md` file that directs the agent to follow `AGENTS.md`.
+   - Example: [`.github/copilot-instructions.md`](https://github.com/workleap/wl-agents-code-review-poc/blob/main/.github/copilot-instructions.md)
+
+4. **For Claude Code**, create a `CLAUDE.md` file that directs the agent to follow `AGENTS.md`.
+   - Example: [`CLAUDE.md`](https://github.com/workleap/wl-agents-code-review-poc/blob/main/CLAUDE.md)
+
+5. **For Claude Code**, create a GitHub Actions workflow to trigger the code review.
+   - Example: [`.github/workflows/claude-code-review.yml`](https://github.com/workleap/wl-agents-code-review-poc/blob/main/.github/workflows/claude-code-review.yml)
+
 ## Round 1 (PR #2) - Copilot vs Claude Code
 
 (IGNORE)

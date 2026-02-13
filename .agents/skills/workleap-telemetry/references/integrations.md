@@ -42,11 +42,13 @@ honeycomb: {
     instrumentations: [],             // Additional OpenTelemetry instrumentations
     spanProcessors: [],               // Custom span processors
 
-    // Use `false` to disable, or a function to enable/customize the instrumentation.
+    // Use `false` to disable, or a function to customize the instrumentation.
     fetchInstrumentation: (config) => config,                // Customize fetch instrumentation
     documentLoadInstrumentation: (config) => config,         // Customize document load instrumentation
-    xmlHttpRequestInstrumentation: (config) => config,       // Providing a function enables/customizes XHR
-    userInteractionInstrumentation: (config) => config,      // Providing a function enables/customizes user interactions
+
+    // Disabled by default. Use `true` to enable with defaults, or a function to enable and customize.
+    xmlHttpRequestInstrumentation: true,                     // Enable XHR instrumentation
+    userInteractionInstrumentation: (config) => config,      // Enable and customize user interactions
 
     transformers: []                  // SDK-level configuration transformers
   }
@@ -102,13 +104,25 @@ try {
 const honeycombClient = useHoneycombInstrumentationClient();
 
 // Add hook at end of pipeline
-honeycombClient.registerFetchRequestHook((span, request) => {
-  span.setAttribute("custom.header", request.headers.get("x-custom"));
+honeycombClient.registerFetchRequestHook((requestSpan, request) => {
+  if (request instanceof Request) {
+    const moduleId = request.headers.get("x-module-id");
+    if (moduleId) {
+      requestSpan.setAttribute("app.module_id", moduleId);
+    }
+  }
 });
 
-// Add hook at start of pipeline
-honeycombClient.registerFetchRequestHookAtStart((span, request) => {
-  span.setAttribute("request.url", request.url);
+// Add hook at start of pipeline (can return true to stop propagation)
+honeycombClient.registerFetchRequestHookAtStart((requestSpan, request) => {
+  if (request instanceof Request) {
+    const moduleId = request.headers.get("x-module-id");
+    if (moduleId) {
+      requestSpan.setAttribute("app.module_id", moduleId);
+      // Return true to prevent execution of subsequent hooks
+      return true;
+    }
+  }
 });
 ```
 
@@ -138,6 +152,7 @@ LogRocket provides session replay for debugging frontend issues and understandin
 | Console capture | Log messages (opt-in via LogRocketLogger) |
 | Network monitoring | Request/response capture |
 | DOM interactions | Click, scroll, input tracking |
+| Issue surfacing | Galileo AI proactively surfaces issues |
 
 ### Configuration Options
 
@@ -155,27 +170,20 @@ logRocket: {
 
 ### Privacy Controls
 
-LogRocket automatically redacts sensitive data. Additional controls:
+By default, all user-provided text inputs and content are sanitized. Use `data-public` to explicitly allow recording:
 
 **HTML Attributes:**
 - `data-public`: Explicitly allow recording of this element
 - `data-private`: Block recording within a public area
 
 ```html
-<!-- Everything recorded -->
+<!-- Content is recorded because of data-public -->
 <div data-public>
   <p>This is recorded</p>
   <!-- This is NOT recorded -->
   <span data-private>Sensitive info</span>
 </div>
 ```
-
-**Default Private Fields:**
-- Authorization headers
-- Passwords
-- Credit card numbers
-- Social security numbers
-- API keys
 
 ### User Identification
 
@@ -187,28 +195,46 @@ const client = useLogRocketInstrumentationClient();
 
 // Create standard Workleap traits
 const traits = client.createWorkleapPlatformDefaultUserTraits({
-  userId: "123",
-  organizationId: "456",
-  organizationName: "Acme Corp",
+  userId: "6a5e6b06-0cac-44ee-8d2b-00b9419e7da9",
+  organizationId: "e6bb30f8-0a00-4928-8943-1630895a3f14",
+  organizationName: "Acme",
   isMigratedToWorkleap: true,
-  isAdmin: true,
-  isOrganizationCreator: false,
-  // Optional product-specific attributes
-  hasFeatureX: true
+  isAdmin: false,
+  isOrganizationCreator: false
 });
 
 // Identify user
 LogRocket.identify(traits.userId, traits);
 ```
 
+### Send Additional Traits
+
+You can merge additional traits before sending them:
+
+```typescript
+const allTraits = {
+  ...client.createWorkleapPlatformDefaultUserTraits({
+    userId: "6a5e6b06-0cac-44ee-8d2b-00b9419e7da9",
+    organizationId: "e6bb30f8-0a00-4928-8943-1630895a3f14",
+    organizationName: "Acme",
+    isMigratedToWorkleap: true,
+    isOrganizationCreator: false,
+    isAdmin: false
+  }),
+  "Additional Trait": "Trait Value"
+};
+
+LogRocket.identify(allTraits.userId, allTraits);
+```
+
 ### Session URL Access
 
 ```typescript
-const client = useLogRocketInstrumentationClient();
+import LogRocket from "logrocket";
 
-client.registerGetSessionUrlListener((url) => {
+// Host applications should use LogRocket.getSessionURL directly
+LogRocket.getSessionURL((url) => {
   console.log("LogRocket session:", url);
-  // Use URL for external integrations
 });
 ```
 
@@ -233,10 +259,10 @@ Mixpanel provides product analytics for tracking user behavior and measuring fea
 
 ```typescript
 mixpanel: {
-  productId: "wlp",              // Required: Product identifier
   envOrTrackingApiBaseUrl: "production",  // Required: Environment or base URL
   options: {
-    trackingEndpoint: "/track"   // Custom tracking endpoint path
+    productId: "wlp",              // Optional: Product identifier
+    trackingEndpoint: "/track"     // Optional: Custom tracking endpoint path
   }
 }
 ```
@@ -291,6 +317,25 @@ mixpanelClient.setGlobalEventProperties({
 });
 ```
 
+### Scoped Properties with MixpanelPropertiesProvider
+
+```typescript
+import { MixpanelPropertiesProvider } from "@workleap/telemetry/react";
+
+// Define as a static object outside the component
+const MixpanelProperties = {
+  section: "User Form"
+};
+
+function App() {
+  return (
+    <MixpanelPropertiesProvider value={MixpanelProperties}>
+      <NestedComponent />
+    </MixpanelPropertiesProvider>
+  );
+}
+```
+
 ### Automatic Correlation
 
 Mixpanel events automatically include:
@@ -330,7 +375,7 @@ wl-telemetry automatically propagates two IDs across all platforms:
 
 **Scenario 1: Backend error traced to frontend**
 1. Find error trace in Honeycomb with `app.telemetry_id`
-2. Search LogRocket for same `Telemetry Id`
+2. Search LogRocket for same `Telemetry Id` in User Traits filter
 3. Watch session replay to see user actions before error
 
 **Scenario 2: User behavior analysis**
